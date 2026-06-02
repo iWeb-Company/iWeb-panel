@@ -1,0 +1,17 @@
+services:
+  control-panel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iweb-control-panel
+    restart: always
+    ports:
+      - "3027:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - ALLOWED_USERS=[{"user":"facundod@iwebtecnology.com","pass":"Iweb2026"},{"user":"valentind@iwebtecnology.com","pass":"Iweb2026"},{"user":"tomasb@iwebtecnology.com","pass":"Iweb.2026"}]
+      - JWT_SECRET=MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_PANEL_IWEB
+    volumes:
+      # Montar el socket de Docker para que el contenedor pueda monitorear la VPS
+      - /var/run/docker.sock:/var/run/docker.sock
