@@ -19,6 +19,12 @@ import type { Project } from "@/types/project";
 
 type Currency = "ARS" | "USD";
 
+function parseCurrency(val: string | undefined): number {
+  if (!val) return 0;
+  const clean = val.replace(/[^0-9]/g, "");
+  return parseFloat(clean) || 0;
+}
+
 export default function AnaliticasPage() {
   const [currency, setCurrency] = useState<Currency>("ARS");
   const [viewMode, setViewMode] = useState<"mensual" | "anual">("anual");
@@ -28,8 +34,19 @@ export default function AnaliticasPage() {
   const { t } = useLanguage();
 
   useEffect(() => {
-    setClients(getStoredClients());
-    setProjects(getStoredProjects());
+    fetch("/api/clients")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setClients(data);
+      })
+      .catch((err) => console.error("Error fetching clients for analytics:", err));
+
+    fetch("/api/projects")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setProjects(data);
+      })
+      .catch((err) => console.error("Error fetching projects for analytics:", err));
   }, []);
 
   const totalBilling = useMemo(() => {
@@ -96,6 +113,130 @@ export default function AnaliticasPage() {
   const activeProjectsCount = useMemo(() => {
     return projects.filter((p) => p.status !== "Completado").length;
   }, [projects]);
+
+  const parsedClients = useMemo(() => {
+    return clients.map((c) => ({
+      ...c,
+      monthlyVal: parseCurrency(c.monthly),
+    }));
+  }, [clients]);
+
+  const parsedProjects = useMemo(() => {
+    return projects.map((p) => {
+      const budgetVal = parseCurrency(p.budget);
+      const remainingVal = parseCurrency(p.remainingBalance);
+      const maintenanceVal = parseCurrency(p.maintenance);
+
+      let duration = 1;
+      if (p.startDate && p.endDate) {
+        const start = new Date(p.startDate);
+        const end = new Date(p.endDate);
+        if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+          const diffDays = Math.ceil(Math.abs(end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+          duration = Math.ceil(diffDays / 30.4) || 1;
+        }
+      }
+      const monthlyBudgetShare = budgetVal / duration;
+
+      return {
+        ...p,
+        budgetVal,
+        remainingVal,
+        maintenanceVal,
+        monthlyBudgetShare,
+      };
+    });
+  }, [projects]);
+
+  const growthStats = useMemo(() => {
+    const currentClientsRevenue = parsedClients
+      .filter((c) => c.status === "Activo")
+      .reduce((sum, c) => sum + c.monthlyVal, 0);
+
+    const currentActiveProjects = parsedProjects.filter(
+      (p) => p.status === "En desarrollo" || p.status === "En revisión" || p.status === "Pausado"
+    );
+    const currentProjectsRevenue = currentActiveProjects.reduce(
+      (sum, p) => sum + p.monthlyBudgetShare + p.maintenanceVal,
+      0
+    );
+
+    const currentTotalRevenue = currentClientsRevenue + currentProjectsRevenue;
+
+    const nextMonthProjects = parsedProjects.filter((p) => {
+      if (p.status === "En desarrollo" || p.status === "En revisión" || p.status === "Pausado") {
+        if (p.endDate) {
+          const end = new Date(p.endDate);
+          const nextMonthDate = new Date();
+          nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+          return end >= nextMonthDate;
+        }
+        return true;
+      }
+      return p.status === "Pendiente";
+    });
+
+    const nextProjectsRevenue = nextMonthProjects.reduce(
+      (sum, p) => sum + p.monthlyBudgetShare + p.maintenanceVal,
+      0
+    );
+
+    const nextTotalRevenue = currentClientsRevenue + nextProjectsRevenue;
+
+    let growthPercent = 0;
+    if (currentTotalRevenue > 0) {
+      growthPercent = ((nextTotalRevenue - currentTotalRevenue) / currentTotalRevenue) * 100;
+    } else if (nextTotalRevenue > 0) {
+      growthPercent = 100;
+    }
+
+    const growthSign = growthPercent >= 0 ? "+" : "";
+    const value = `${growthSign}${growthPercent.toFixed(1)}%`;
+
+    let description = t("tendenciaPositiva");
+    if (growthPercent < 0) {
+      description = "Ajuste de cartera de proyectos";
+    } else if (growthPercent === 0) {
+      description = "Sin cambios en el pipeline";
+    } else {
+      description = "Crecimiento proyectado por inicio de nuevos hitos";
+    }
+
+    return {
+      value,
+      description,
+    };
+  }, [parsedClients, parsedProjects, t]);
+
+  const riskStats = useMemo(() => {
+    const activeProjects = parsedProjects.filter((p) => p.status !== "Completado");
+    const totalActiveBudgets = activeProjects.reduce((sum, p) => sum + p.budgetVal, 0);
+    const debtorProjects = activeProjects.filter((p) => p.paymentUpToDate === "NO");
+    const totalOutstandingDebt = debtorProjects.reduce((sum, p) => sum + p.remainingVal, 0);
+
+    const debtRatio = totalActiveBudgets > 0 ? (totalOutstandingDebt / totalActiveBudgets) * 100 : 0;
+
+    let value = "0.0% (Excelente)";
+    let description = "Todos los cobros están al día";
+
+    if (debtRatio > 0) {
+      if (debtRatio <= 10) {
+        value = `${debtRatio.toFixed(1)}% (Bajo)`;
+        description = `${debtorProjects.length} proyecto(s) con cobros demorados`;
+      } else if (debtRatio <= 25) {
+        value = `${debtRatio.toFixed(1)}% (Medio)`;
+        description = `${debtorProjects.length} proyectos con facturación pendiente`;
+      } else {
+        value = `${debtRatio.toFixed(1)}% (Crítico)`;
+        description = `Morosidad alta: ${debtorProjects.length} proyectos con deuda`;
+      }
+    }
+
+    return {
+      value,
+      description,
+    };
+  }, [parsedProjects]);
 
   return (
     <div className="space-y-6">
@@ -169,15 +310,15 @@ export default function AnaliticasPage() {
         <div className="grid gap-5">
           <StatCard
             title={t("previsionCrecimiento")}
-            value={activeClientsCount > 0 ? "+24.8%" : "+0.0%"}
-            description={t("tendenciaPositiva")}
+            value={growthStats.value}
+            description={growthStats.description}
             icon={<TrendUpIcon className="h-5 w-5" />}
           />
 
           <StatCard
             title={t("evaluacionRiesgos")}
-            value={activeClientsCount > 0 ? t("bajo") : "N/A"}
-            description={t("operacionEstable")}
+            value={riskStats.value}
+            description={riskStats.description}
             icon={<ShieldCheckIcon className="h-5 w-5" />}
           />
         </div>

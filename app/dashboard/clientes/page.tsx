@@ -32,7 +32,12 @@ export default function ClientesPage() {
   const { t, language } = useLanguage();
 
   useEffect(() => {
-    setClients(getStoredClients());
+    fetch("/api/clients")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setClients(data);
+      })
+      .catch((err) => console.error("Error fetching clients:", err));
   }, []);
 
   const filteredClients = useMemo(() => {
@@ -78,17 +83,25 @@ export default function ClientesPage() {
   }, [clients, language]);
 
   function handleSaveClient(client: Client) {
-    setClients((current) => {
-      const exists = current.some((item) => item.id === client.id);
-      let updated;
-      if (exists) {
-        updated = current.map((item) => (item.id === client.id ? client : item));
-      } else {
-        updated = [client, ...current];
-      }
-      setStoredClients(updated);
-      return updated;
-    });
+    const exists = clients.some((item) => item.id === client.id);
+    const method = exists ? "PUT" : "POST";
+
+    fetch("/api/clients", {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(client),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        setClients((current) => {
+          if (exists) {
+            return current.map((item) => (item.id === client.id ? client : item));
+          } else {
+            return [client, ...current];
+          }
+        });
+      })
+      .catch((err) => console.error("Error saving client:", err));
   }
 
   function handleCreateClient() {
@@ -104,13 +117,39 @@ export default function ClientesPage() {
   function handleDeleteClient() {
     if (!clientToDelete) return;
 
-    setClients((current) => {
-      const updated = current.filter((client) => client.id !== clientToDelete.id);
-      setStoredClients(updated);
-      return updated;
-    });
+    fetch(`/api/clients?id=${clientToDelete.id}`, { method: "DELETE" })
+      .then((res) => res.json())
+      .then(() => {
+        setClients((current) => current.filter((client) => client.id !== clientToDelete.id));
+        setClientToDelete(null);
+      })
+      .catch((err) => console.error("Error deleting client:", err));
+  }
 
-    setClientToDelete(null);
+  function handleExportClients() {
+    if (clients.length === 0) return;
+    const headers = ["ID", "Nombre", "Responsable", "Mensualidad", "Producto", "Estado"];
+    const rows = clients.map((c) => [
+      c.id,
+      c.name,
+      c.responsible,
+      c.monthly,
+      c.product,
+      c.status,
+    ]);
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.map((val) => `"${String(val).replace(/"/g, '""')}"`).join(",")),
+    ].join("\n");
+
+    const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `clientes_${new Date().toISOString().split("T")[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   return (
@@ -122,7 +161,10 @@ export default function ClientesPage() {
         icon={<ClientsIcon className="h-5 w-5" />}
         actions={
           <>
-            <button className="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-zinc-300 transition hover:border-white/20 hover:bg-white/[0.07] hover:text-white">
+            <button
+              onClick={handleExportClients}
+              className="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-zinc-300 transition hover:border-white/20 hover:bg-white/[0.07] hover:text-white cursor-pointer"
+            >
               {t("exportarDatos")}
             </button>
 

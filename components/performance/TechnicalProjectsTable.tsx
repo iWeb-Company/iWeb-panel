@@ -13,6 +13,7 @@ import {
 } from "@/components/icons/SidebarIcons";
 import { IconActionButton } from "@/components/ui/IconActionButton";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Modal } from "@/components/ui/Modal";
 import { TechnicalStatusBadge } from "./TechnicalStatusBadge";
 import { useLanguage } from "@/lib/LanguageContext";
 
@@ -32,26 +33,79 @@ export function TechnicalProjectsTable({
   const [containerToStop, setContainerToStop] =
     useState<TechnicalContainer | null>(null);
 
+  const [activeLogsContainer, setActiveLogsContainer] =
+    useState<TechnicalContainer | null>(null);
+  const [logsContent, setLogsContent] = useState("");
+  const [loadingLogs, setLoadingLogs] = useState(false);
+
   function toggleProject(projectId: string) {
     setOpenProjectId((current) => (current === projectId ? null : projectId));
   }
 
+  function fetchLogs(containerId: string) {
+    setLoadingLogs(true);
+    setLogsContent("");
+    fetch(`/api/docker/containers/logs?id=${containerId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setLogsContent(data.logs || "No logs available.");
+      })
+      .catch((err) => {
+        setLogsContent(`Error retrieving logs: ${err.message}`);
+      })
+      .finally(() => {
+        setLoadingLogs(false);
+      });
+  }
+
   function handleConfirmRestart() {
-    alert(
-      language === "ES"
-        ? `Contenedor reiniciado: ${containerToRestart?.name}`
-        : `Container restarted: ${containerToRestart?.name}`
-    );
-    setContainerToRestart(null);
+    if (!containerToRestart) return;
+
+    fetch("/api/docker/containers/action", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: containerToRestart.id, action: "restart" }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        alert(
+          language === "ES"
+            ? `Contenedor reiniciado: ${containerToRestart?.name}`
+            : `Container restarted: ${containerToRestart?.name}`
+        );
+      })
+      .catch((err) => {
+        console.error("Error restarting container:", err);
+        alert(`Error: ${err.message}`);
+      })
+      .finally(() => {
+        setContainerToRestart(null);
+      });
   }
 
   function handleConfirmStop() {
-    alert(
-      language === "ES"
-        ? `Contenedor detenido: ${containerToStop?.name}`
-        : `Container stopped: ${containerToStop?.name}`
-    );
-    setContainerToStop(null);
+    if (!containerToStop) return;
+
+    fetch("/api/docker/containers/action", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: containerToStop.id, action: "stop" }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        alert(
+          language === "ES"
+            ? `Contenedor detenido: ${containerToStop?.name}`
+            : `Container stopped: ${containerToStop?.name}`
+        );
+      })
+      .catch((err) => {
+        console.error("Error stopping container:", err);
+        alert(`Error: ${err.message}`);
+      })
+      .finally(() => {
+        setContainerToStop(null);
+      });
   }
 
   return (
@@ -161,7 +215,10 @@ export function TechnicalProjectsTable({
                           <div className="flex justify-end gap-2">
                             <IconActionButton
                               label={t("verLogs")}
-                              onClick={() => alert(`${t("verLogs")}: ${container.name}`)}
+                              onClick={() => {
+                                setActiveLogsContainer(container);
+                                fetchLogs(container.id);
+                              }}
                               icon={<LogsIcon className="h-4 w-4" />}
                             />
 
@@ -217,6 +274,45 @@ export function TechnicalProjectsTable({
         onClose={() => setContainerToStop(null)}
         onConfirm={handleConfirmStop}
       />
+
+      <Modal
+        title={activeLogsContainer ? `Logs: ${activeLogsContainer.name}` : ""}
+        description={activeLogsContainer ? `${activeLogsContainer.image} · ${activeLogsContainer.id.substring(0, 12)}` : ""}
+        open={!!activeLogsContainer}
+        onClose={() => setActiveLogsContainer(null)}
+      >
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between items-center text-xs text-zinc-500">
+            <span>Últimas 100 líneas de logs</span>
+            <button
+              onClick={() => activeLogsContainer && fetchLogs(activeLogsContainer.id)}
+              disabled={loadingLogs}
+              className="px-3 py-1 rounded bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10 disabled:opacity-50 transition cursor-pointer"
+            >
+              {loadingLogs ? "Cargando..." : "Actualizar"}
+            </button>
+          </div>
+
+          <div className="relative font-mono text-[11px] leading-5 bg-black text-emerald-400 p-4 rounded-2xl h-[380px] overflow-y-auto whitespace-pre-wrap border border-white/5 shadow-inner">
+            {loadingLogs ? (
+              <div className="flex h-full items-center justify-center text-zinc-500 font-sans">
+                <span className="animate-pulse">Cargando logs del contenedor...</span>
+              </div>
+            ) : (
+              logsContent
+            )}
+          </div>
+
+          <div className="flex justify-end mt-2">
+            <button
+              onClick={() => setActiveLogsContainer(null)}
+              className="rounded-xl border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm font-semibold text-zinc-300 transition hover:bg-white/[0.07] hover:text-white cursor-pointer"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }

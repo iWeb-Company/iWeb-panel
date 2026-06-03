@@ -51,8 +51,13 @@ export default function RendimientoPage() {
   const [showAllContainers, setShowAllContainers] = useState(false);
 
   useEffect(() => {
-    // 1. Load projects from storage
-    setProjects(getStoredProjects());
+    // 1. Load projects from API
+    fetch("/api/projects")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setProjects(data);
+      })
+      .catch((err) => console.error("Error fetching projects for performance page:", err));
 
     // 2. Fetch containers from Docker VPS API
     fetch("/api/docker/containers")
@@ -295,6 +300,43 @@ export default function RendimientoPage() {
       .slice(0, 5);
   }, [mappedTechnicalProjects]);
 
+  function handleExportLogs() {
+    if (dockerContainers.length === 0) return;
+    const headers = [
+      "ID",
+      "Nombre",
+      "Imagen",
+      "Estado",
+      "CPU %",
+      "Memoria",
+      "E/S Red",
+      "E/S Disco",
+    ];
+    const rows = dockerContainers.map((c) => [
+      c.id,
+      c.name,
+      c.image,
+      c.status,
+      c.cpu,
+      c.memory,
+      c.netIO,
+      c.blockIO,
+    ]);
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.map((val) => `"${String(val).replace(/"/g, '""')}"`).join(",")),
+    ].join("\n");
+
+    const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `logs_rendimiento_${new Date().toISOString().split("T")[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -303,7 +345,10 @@ export default function RendimientoPage() {
         description={t("rendimientoDesc")}
         icon={<PerformanceIcon className="h-5 w-5" />}
         actions={
-          <button className="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-zinc-300 transition hover:border-white/20 hover:bg-white/[0.07] hover:text-white cursor-pointer">
+          <button
+            onClick={handleExportLogs}
+            className="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-zinc-300 transition hover:border-white/20 hover:bg-white/[0.07] hover:text-white cursor-pointer"
+          >
             {t("exportarLogs")}
           </button>
         }

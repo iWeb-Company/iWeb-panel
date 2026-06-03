@@ -35,16 +35,14 @@ export default function ProyectosPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("Todos");
 
-  // Load from local storage on mount
+  // Load from database API on mount
   useEffect(() => {
-    const stored = getStoredProjects();
-    if (stored && stored.length > 0) {
-      setProjects(stored);
-    } else {
-      // Seed with initial projects if empty
-      setStoredProjects(initialProjects);
-      setProjects(initialProjects);
-    }
+    fetch("/api/projects")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setProjects(data);
+      })
+      .catch((err) => console.error("Error fetching projects:", err));
   }, []);
 
   // Filter projects by search term and selected status
@@ -120,17 +118,26 @@ export default function ProyectosPage() {
   }
 
   function handleSaveProject(savedProject: Project) {
-    setProjects((current) => {
-      const exists = current.some((p) => p.id === savedProject.id);
-      let updated: Project[];
-      if (exists) {
-        updated = current.map((p) => (p.id === savedProject.id ? savedProject : p));
-      } else {
-        updated = [...current, savedProject];
-      }
-      setStoredProjects(updated);
-      return updated;
-    });
+    const exists = projects.some((p) => p.id === savedProject.id);
+    const method = exists ? "PUT" : "POST";
+
+    fetch("/api/projects", {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(savedProject),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        setProjects((current) => {
+          if (exists) {
+            return current.map((p) => (p.id === savedProject.id ? savedProject : p));
+          } else {
+            return [...current, savedProject];
+          }
+        });
+      })
+      .catch((err) => console.error("Error saving project:", err));
+
     setIsFormOpen(false);
     setProjectToEdit(null);
   }
@@ -138,13 +145,70 @@ export default function ProyectosPage() {
   function handleDeleteProject() {
     if (!projectToDelete) return;
 
-    setProjects((current) => {
-      const updated = current.filter((p) => p.id !== projectToDelete.id);
-      setStoredProjects(updated);
-      return updated;
-    });
+    fetch(`/api/projects?id=${projectToDelete.id}`, { method: "DELETE" })
+      .then((res) => res.json())
+      .then(() => {
+        setProjects((current) => current.filter((p) => p.id !== projectToDelete.id));
+        setProjectToDelete(null);
+      })
+      .catch((err) => console.error("Error deleting project:", err));
+  }
 
-    setProjectToDelete(null);
+  function handleExportProjects() {
+    if (projects.length === 0) return;
+    const headers = [
+      "ID",
+      "Nombre",
+      "Prioridad",
+      "Responsable",
+      "CUIT",
+      "Estado",
+      "Fecha Inicio",
+      "Fecha Cobro",
+      "Fecha Fin",
+      "Presupuesto",
+      "Avance %",
+      "Saldo Restante",
+      "Mantencion",
+      "Pago al Dia",
+      "Dominio",
+      "Deuda Desde",
+      "Notas",
+      "Categoria",
+    ];
+    const rows = projects.map((p) => [
+      p.id,
+      p.name,
+      p.priority,
+      p.responsible,
+      p.cuit,
+      p.status,
+      p.startDate,
+      p.billingDate,
+      p.endDate,
+      p.budget,
+      p.advancePercent,
+      p.remainingBalance,
+      p.maintenance,
+      p.paymentUpToDate,
+      p.domain,
+      p.debtSince,
+      p.notes,
+      p.category,
+    ]);
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.map((val) => `"${String(val).replace(/"/g, '""')}"`).join(",")),
+    ].join("\n");
+
+    const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `proyectos_${new Date().toISOString().split("T")[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   return (
@@ -156,7 +220,10 @@ export default function ProyectosPage() {
         icon={<ProjectsIcon className="h-5 w-5" />}
         actions={
           <>
-            <button className="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-zinc-300 transition hover:border-white/20 hover:bg-white/[0.07] hover:text-white cursor-pointer">
+            <button
+              onClick={handleExportProjects}
+              className="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-zinc-300 transition hover:border-white/20 hover:bg-white/[0.07] hover:text-white cursor-pointer"
+            >
               {t("exportarDatos")}
             </button>
 

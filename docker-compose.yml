@@ -15,3 +15,4 @@ services:
     volumes:
       # Montar el socket de Docker para que el contenedor pueda monitorear la VPS
       - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/data:/opt/data
