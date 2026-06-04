@@ -121,6 +121,25 @@ function initializeDb() {
       if (err) console.error("Error creating projects table:", err);
       else seedProjects();
     });
+
+    // 3. Create notifications table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id TEXT PRIMARY KEY,
+        username TEXT NOT NULL,
+        type TEXT NOT NULL,
+        titleES TEXT NOT NULL,
+        titleEN TEXT NOT NULL,
+        descriptionES TEXT NOT NULL,
+        descriptionEN TEXT NOT NULL,
+        href TEXT NOT NULL,
+        actionES TEXT NOT NULL,
+        actionEN TEXT NOT NULL,
+        isRead INTEGER NOT NULL DEFAULT 0
+      )
+    `, (err) => {
+      if (err) console.error("Error creating notifications table:", err);
+    });
   });
 }
 

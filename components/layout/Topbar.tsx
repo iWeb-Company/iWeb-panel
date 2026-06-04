@@ -15,41 +15,7 @@ export function Topbar() {
   const { language, toggleLanguage, t } = useLanguage();
   const [profile, setProfile] = useState({ name: "Valentín", role: "UX/UI Designer" });
   
-  const [notifications, setNotifications] = useState([
-    {
-      id: "n1",
-      type: "warning",
-      titleES: "Tranett tiene alto consumo de CPU",
-      titleEN: "Tranett has high CPU usage",
-      descriptionES: "El proyecto está usando 89.2% de CPU.",
-      descriptionEN: "The project is using 89.2% of CPU.",
-      href: "/dashboard/rendimiento",
-      actionES: "Ir a rendimiento",
-      actionEN: "Go to performance",
-    },
-    {
-      id: "n2",
-      type: "info",
-      titleES: "Vitalis tiene una entrega cercana",
-      titleEN: "Vitalis has an upcoming delivery",
-      descriptionES: "La entrega final MVP está programada para el 05/06/2026.",
-      descriptionEN: "The final MVP delivery is scheduled for 06/05/2026.",
-      href: "/dashboard/proyectos",
-      actionES: "Ir a proyectos",
-      actionEN: "Go to projects",
-    },
-    {
-      id: "n3",
-      type: "danger",
-      titleES: "Contenedor detenido",
-      titleEN: "Container stopped",
-      descriptionES: "Vitalis backend figura como Exited.",
-      descriptionEN: "Vitalis backend is listed as Exited.",
-      href: "/dashboard/rendimiento",
-      actionES: "Revisar contenedor",
-      actionEN: "Review container",
-    },
-  ]);
+  const [notifications, setNotifications] = useState<any[]>([]);
   const [hasUnread, setHasUnread] = useState(true);
 
   useEffect(() => {
@@ -67,6 +33,19 @@ export function Topbar() {
     } else {
       setProfile({ name: "Administrador", role: "Control Panel" });
     }
+
+    if (savedUser) {
+      fetch(`/api/notifications?username=${encodeURIComponent(savedUser)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setNotifications(data);
+            const hasUnreadNotifications = data.some((n) => !n.isRead);
+            setHasUnread(hasUnreadNotifications);
+          }
+        })
+        .catch((err) => console.error("Error fetching notifications in Topbar:", err));
+    }
   }, []);
 
   const handleToggleNotifications = () => {
@@ -80,7 +59,17 @@ export function Topbar() {
   };
 
   const handleDismissNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    const savedUser = localStorage.getItem("iweb_panel_username") || "";
+    if (savedUser) {
+      fetch(`/api/notifications?id=${id}&username=${encodeURIComponent(savedUser)}`, {
+        method: "DELETE",
+      })
+        .then((res) => res.json())
+        .then(() => {
+          setNotifications((prev) => prev.filter((n) => n.id !== id));
+        })
+        .catch((err) => console.error("Error deleting notification:", err));
+    }
   };
 
   return (

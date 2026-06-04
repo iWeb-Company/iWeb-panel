@@ -31,7 +31,10 @@ export function NotificationsDropdown({
   if (!open) return null;
 
   return (
-    <div className="absolute right-0 top-14 z-50 w-[420px] rounded-[22px] border border-white/10 bg-[#0B0F0F] p-4 shadow-[0_24px_90px_rgba(0,0,0,0.5)]">
+    <div 
+      className="absolute right-0 top-14 z-[999] w-[420px] rounded-[22px] border border-white/10 p-4 shadow-[0_24px_90px_rgba(0,0,0,0.85)]"
+      style={{ backgroundColor: "#0B0F0F", opacity: 1 }}
+    >
       <div className="mb-4 flex items-start justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-400">
