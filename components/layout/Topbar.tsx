@@ -73,7 +73,7 @@ export function Topbar() {
   };
 
   return (
-    <header className="sticky top-0 z-10 flex h-[82px] items-center justify-between border-b border-white/10 bg-[#030606] px-8">
+    <header className="sticky top-0 z-30 flex h-[82px] items-center justify-between border-b border-white/10 bg-[#030606] px-8">
       <div className="relative">
         <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-600" />
 
