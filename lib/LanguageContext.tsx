@@ -22,6 +22,7 @@ const translations = {
     clientes: "Clientes",
     proyectos: "Proyectos",
     rendimiento: "Rendimiento",
+    marketing: "Agente Marketing",
     controlInterno: "Control interno",
     cerrarSesion: "Cerrar sesión",
 
@@ -179,6 +180,7 @@ const translations = {
     clientes: "Clients",
     proyectos: "Projects",
     rendimiento: "Performance",
+    marketing: "Marketing Agent",
     controlInterno: "Internal control",
     cerrarSesion: "Log out",
 

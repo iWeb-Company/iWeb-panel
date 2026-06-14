@@ -7,11 +7,23 @@ export async function POST(request: Request) {
     const { username, password, remember } = body;
 
     const allowedUsersRaw = process.env.ALLOWED_USERS || "[]";
-    let allowedUsers = [];
+    let allowedUsers: { user: string; pass: string }[] = [];
     try {
       allowedUsers = JSON.parse(allowedUsersRaw);
     } catch (error) {
       console.error("Error parsing ALLOWED_USERS environment variable:", error);
+    }
+
+    // Cargar también usuarios individuales de .env.local (USER_1, PASS_1, USER_2, PASS_2, etc.)
+    let idx = 1;
+    while (true) {
+      const u = process.env[`USER_${idx}`];
+      const p = process.env[`PASS_${idx}`];
+      if (!u && !p) break;
+      if (u && p) {
+        allowedUsers.push({ user: u, pass: p });
+      }
+      idx++;
     }
 
     const isValid = allowedUsers.some(

@@ -1,0 +1,236 @@
+[
+  {
+    "name": "Travel Viajes USA",
+    "web": "https://travelviajesusa.com",
+    "email": "",
+    "phone": "+52 33 1468 1835",
+    "category": "Agencia de Viajes",
+    "description": "Agencia de viajes y tour operador mayorista en Estados Unidos que ofrece paquetes de viaje, opciones todo incluido, tours internacionales, cruceros y viajes a medida con asesoría personalizada.",
+    "analysis": {
+      "score": 88,
+      "problemas": [
+        "Proceso de cotización y ventas sumamente lento y manual, requiriendo que los asesores respondan formularios en un plazo de hasta 24 horas o atiendan todo vía chat de WhatsApp.",
+        "Falta de un motor de reservas en tiempo real o pasarela de pagos integrada en la web para asegurar señas de paquetes de alto valor de forma inmediata.",
+        "Inexistencia de un portal autogestionable para el cliente, lo que obliga a coordinar itinerarios, visas, pasaportes y confirmaciones de manera manual e individual por chat."
+      ],
+      "oportunidades": [
+        "Implementar un cotizador interactivo en línea que brinde estimaciones automáticas de precios según variables de viaje seleccionadas.",
+        "Desarrollar un flujo automatizado de nutrición y calificación de leads a través de WhatsApp integrado con Inteligencia Artificial.",
+        "Habilitar una pasarela de pagos en línea segura para procesar depósitos iniciales y financiamiento de paquetes turísticos.",
+        "Crear un portal de clientes centralizado donde los viajeros puedan ver su itinerario en tiempo real, cargar documentos de viaje y realizar el seguimiento de sus pagos."
+      ],
+      "software_sugerido": [
+        "Software a Medida: Cotizador Turístico Dinámico y Motor de Pre-Reservas, que permita a los usuarios personalizar sus rutas y calcular el precio de sus paquetes al instante, con opción de pago de seña integrado.",
+        "Automatizaciones: Bot de WhatsApp Conversacional con IA para Calificación de Leads, capaz de entender qué destino busca el usuario, su presupuesto y fechas, registrando la información directamente en un CRM antes de pasar el caso a un asesor.",
+        "Sistemas de Gestión: Portal Privado del Viajero, una plataforma donde el cliente puede consultar su itinerario interactivo día a día, descargar sus vouchers y subir copias de pasaportes y visas de manera segura."
+      ],
+      "emailDraft": "Asunto: Clientes esperando 24 horas... ¿y si cotizan y reservan al instante? ✈️\n\nHola gente de Travel Viajes USA,\n\nEstuve navegando por su web y me parecieron espectaculares los paquetes de viaje que manejan, especialmente los tours grupales a Japón y las quinceañeras a Europa. Tienen un producto de altísimo valor.\n\nSin embargo, analizando el flujo desde la perspectiva del usuario, noté que para cotizar o dar el siguiente paso hay que llenar un formulario y esperar hasta 24 horas, o bien iniciar un chat manual de WhatsApp. En el mercado turístico de hoy, donde la inmediatez lo es todo, esta fricción puede hacer que muchos clientes potenciales terminen cotizando con la competencia mientras esperan una respuesta.\n\nEn iWEB nos especializamos en transformar agencias de viajes. Podemos ayudarles a desarrollar un Cotizador Inteligente en su web y un Bot de WhatsApp con IA para que sus clientes reciban presupuestos al instante y puedan, incluso, pre-reservar su lugar pagando una seña en línea de forma 100% segura. Esto liberaría a sus asesores de tareas repetitivas para que se enfoquen únicamente en cerrar ventas listas.\n\n¿Les interesaría tener una breve charla de 10 minutos la próxima semana para mostrarles cómo podríamos implementarlo en su negocio, sin ningún compromiso?\n\n¡Un saludo!\n\nEl equipo de iWEB"
+    }
+  },
+  {
+    "name": "Gallo Travel Agency LLC",
+    "web": "https://gallotravelagency.us",
+    "email": "info@gallotravelagency.us",
+    "phone": "+1 (786) 762 2630",
+    "category": "Agencia de viajes",
+    "description": "Agencia de viajes en Miami especializada en la organización de excursiones en autobús por Estados Unidos, paquetes turísticos a Europa y el Caribe, y servicios de viajes a la medida.",
+    "analysis": {
+      "score": 85,
+      "problemas": [
+        "Proceso de reserva altamente manual: la conversión de paquetes a Turquía o rutas en autobús depende de llamadas telefónicas o formularios estáticos de contacto, perdiendo clientes que prefieren la compra inmediata.",
+        "Falta de pasarela de pagos integrada para reservas directas y cobro de cuotas de financiamiento en línea.",
+        "Contenido desactualizado: la sección del blog muestra un archivo estancado en el año 2022, lo que afecta negativamente al SEO y la imagen de marca actual."
+      ],
+      "oportunidades": [
+        "Implementación de un motor de reservas y pasarela de pago para tours de autobús y paquetes vacacionales.",
+        "Automatización del proceso de captura y cotización de leads a través de WhatsApp interactivo para aliviar la carga de los asesores.",
+        "Creación de un Portal de Clientes donde los viajeros puedan gestionar sus reservas, ver sus itinerarios de viaje y pagar sus cuotas de financiamiento."
+      ],
+      "software_sugerido": [
+        "Motor de Reservas y Ecommerce a Medida: Plataforma web que permite a los usuarios seleccionar fechas, ver disponibilidad en tiempo real, reservar asientos en los bus tours y realizar el pago completo o inicial de forma digital.",
+        "Asistente de Ventas Inteligente por WhatsApp (Automatización): Bot integrado con IA para responder consultas frecuentes sobre destinos, enviar itinerarios en PDF de manera instantánea y precalificar leads antes de pasarlos a un agente humano."
+      ],
+      "emailDraft": "Asunto: ¿Cómo automatizar las reservas de Gallo Travel? ✈️\n\nHola gente de Gallo Travel Agency,\n\nEstuve revisando su sitio web y me encantó ver la gran cantidad de destinos increíbles que ofrecen, además de las excelentes calificaciones que tienen de sus clientes (¡casi 400 reseñas de 5 estrellas en Google es un logro tremendo!).\n\nAnalizando la experiencia de usuario en su web, noté que para reservar viajes tan atractivos como sus famosos bus tours o los paquetes a Turquía, el cliente siempre debe llamarlos por teléfono o esperar a que un asesor lo contacte manualmente mediante un formulario. En la era digital, esto puede hacer que pierdan clientes que prefieren reservar y asegurar su lugar al instante, especialmente fuera del horario de oficina.\n\nEn iWEB nos especializamos en transformar agencias de viajes. Podemos ayudarles a desarrollar un Motor de Reservas online y un Bot de WhatsApp inteligente que califique los leads y entregue itinerarios de forma automática las 24 horas del día. Esto liberaría a sus asesores para que se enfoquen únicamente en cerrar las ventas más complejas.\n\n¿Se animan a que charlemos unos 10 minutos esta semana para mostrarles cómo podríamos implementarlo en su negocio?\n\nUn saludo,\n\nEl equipo de iWEB"
+    }
+  },
+  {
+    "name": "Dviaje Travel Agency",
+    "web": "https://dviajeonline.com",
+    "email": "",
+    "phone": "(305) 306-6637",
+    "category": "Agencia de viajes",
+    "description": "Dviaje Travel es una agencia de viajes basada en Miami que se especializa en la planificación y reserva de vacaciones, cruceros y circuitos turísticos hacia destinos populares en el Caribe, Europa y otras regiones internacionales.",
+    "analysis": {
+      "score": 85,
+      "problemas": [
+        "Falta de un motor de reservas y cotización en tiempo real: el sitio web funciona como un catálogo estático donde los usuarios no pueden ver precios dinámicos ni reservar de manera autónoma.",
+        "Dependencia total de procesos manuales: para concretar cualquier reserva, los clientes deben llamar por teléfono, rellenar formularios de contacto o enviar correos electrónicos, lo que limita la conversión fuera del horario de oficina.",
+        "Ausencia de pasarela de pagos integrada en la plataforma: no se permite realizar el pago de señas o del total de los paquetes turísticos de forma directa y segura en el sitio web."
+      ],
+      "oportunidades": [
+        "Digitalización del catálogo mediante un cotizador interactivo que permita a los usuarios personalizar su viaje (noches, tipo de hotel, actividades en Punta Cana/Cancún) y obtener un precio estimado al instante.",
+        "Automatización de la atención inicial implementando un asistente virtual (bot de WhatsApp) integrado a un CRM para pre-clasificar los leads interesados antes de derivarlos a un agente humano.",
+        "Desarrollo de un Portal de Clientes privado donde los viajeros puedan consultar sus itinerarios, pasajes, vouchers de hotel y realizar pagos pendientes de manera segura."
+      ],
+      "software_sugerido": [
+        "Motor de Reservas y Cotizador Turístico Web (Software a Medida / Ecommerce): Una plataforma interactiva integrada en dviajeonline.com que permita a los clientes seleccionar hoteles, cruceros o paquetes de grupo, calcular tarifas dinámicas y pagar su reserva al instante mediante pasarelas seguras como Stripe o PayPal.",
+        "Sistema de Automatización de Leads y CRM para Agencias (Sistemas de Gestión / Automatizaciones): Una integración que capture los datos de los formularios y consultas web, los canalice en un CRM centralizado y active flujos de seguimiento automáticos por WhatsApp y correo electrónico para aumentar la tasa de cierre de ventas."
+      ],
+      "emailDraft": "Asunto: Idea para automatizar las reservas en Dviaje Travel ✈️\n\nHola equipo de Dviaje Travel,\n\nEstuve revisando su sitio web dviajeonline.com y déjenme felicitarlos por la increíble reputación que tienen en Miami. ¡Lograr más de 520 reseñas excelentes en Google demuestra el gran nivel de servicio y confianza que transmiten!\n\nAnalizando su web, noté que actualmente funciona de forma excelente como catálogo, pero requiere que sus clientes los llamen o manden correos para cotizar y reservar destinos tan solicitados como Punta Cana o Cancún. Esto significa que su equipo pasa mucho tiempo respondiendo consultas repetitivas de forma manual y que podrían estar perdiendo clientes que prefieren reservar y pagar de forma inmediata en línea.\n\nEn iWEB nos especializamos en ayudar a agencias como la suya a dar el salto tecnológico. Podemos construir para ustedes un Motor de Reservas y Cotizador automatizado a medida con pasarela de pagos integrada directamente en su web. De esta manera, sus clientes podrán cotizar y pagar su viaje ideal las 24 horas del día, los 7 días de la semana, liberando a su equipo para que se concentre únicamente en el cierre de ventas complejas y en la atención premium.\n\n¿Qué les parece si agendamos una breve llamada amigable de 10 minutos esta semana para platicar de cómo podríamos implementarlo, sin ningún tipo de compromiso?\n\n¡Un saludo para todo el equipo en Miami!\n\nEl equipo de iWEB"
+    }
+  },
+  {
+    "name": "Travel Viajes USA",
+    "web": "https://travelviajescalifornia.com",
+    "email": "",
+    "phone": "+52 33 1468 1835",
+    "category": "Agencia de viajes",
+    "description": "Agencia de viajes especializada en asesoría en español para viajeros hispanos de California, ofreciendo cotización de paquetes turísticos, vuelos, hoteles y circuitos internacionales desde Los Ángeles.",
+    "analysis": {
+      "score": 85,
+      "problemas": [
+        "Proceso de cotización 100% manual a través de WhatsApp, lo que satura a los asesores con solicitudes de información básica sobre disponibilidad y tarifas.",
+        "Falta de una pasarela de pagos integrada en la web, obligando a los clientes a depender del contacto humano para realizar transacciones o apartados.",
+        "Inconsistencias en el contenido y la segmentación (por ejemplo, artículos del blog orientados a salidas 'desde México' cuando su público objetivo y propuesta de valor principal son los hispanos que residen en California)."
+      ],
+      "oportunidades": [
+        "Digitalización del flujo de cotización mediante un cotizador interactivo en tiempo real que filtre presupuestos y destinos automáticamente.",
+        "Automatización del primer contacto de atención al cliente en WhatsApp para calificar leads antes de derivarlos con un asesor humano.",
+        "Implementación de pasarelas de pago seguras (Stripe/PayPal) para permitir el cobro inmediato de depósitos o reservas de circuitos."
+      ],
+      "software_sugerido": [
+        "Cotizador de Viajes Interactiva y Motor de Reservas (Software a Medida / Ecommerce): Un sistema web integrado que permita a los usuarios seleccionar destino, fechas, vuelos y traslados para obtener un presupuesto estimado al instante y dejar un pago de reserva en línea.",
+        "Bot de WhatsApp con Inteligencia Artificial y CRM de Ventas integrado (Automatizaciones / Sistemas de Gestión): Un asistente automatizado que interactúe inicialmente con el cliente para recopilar destino, presupuesto y fechas de viaje, registrando todos los datos de forma estructurada en un tablero de control para el equipo de ventas."
+      ],
+      "emailDraft": "Asunto: Ideas para automatizar las cotizaciones en Travel Viajes USA ✈️\n\nHola gente de Travel Viajes USA,\n\nEspero que estén muy bien. Estuve navegando por su sitio web y me pareció espectacular el enfoque tan claro que tienen para ayudar a la comunidad hispana en California a planear sus viajes a destinos increíbles como Japón, Europa o el Caribe.\n\nAnalizando el proceso de compra que proponen, noté que la validación de itinerarios, disponibilidad y el pago dependen al 100% de la intervención manual de un asesor por WhatsApp. Esto es excelente para dar un trato humano, pero puede convertirse en un cuello de botella cuando reciben muchas consultas a la vez, además de que hoy en día muchos clientes prefieren ver un estimado real o poder reservar su lugar al instante en la web.\n\nEn iWEB nos especializamos en desarrollar software a medida para agencias de viajes. Pensando en su modelo, creo que les vendría de diez un Cotizador Online Automatizado donde sus clientes puedan armar su viaje ideal y dejar una seña en línea, o bien una automatización inteligente para su canal de WhatsApp que filtre y ordene los leads antes de pasárselos a sus agentes.\n\n¿Les interesaría tener una breve charla de 10 minutos esta semana para mostrarles cómo lo hemos resuelto para otras marcas, de manera súper amigable y sin compromisos?\n\nUn saludo,\nEl equipo de iWEB"
+    }
+  },
+  {
+    "name": "NUBA",
+    "web": "https://nuba.com/us",
+    "email": "",
+    "phone": "+52 (55) 5255 4455",
+    "category": "Agencia de viajes de lujo",
+    "description": "NUBA es una agencia experta en el diseño de viajes exclusivos y a medida con más de 30 años de experiencia, ofreciendo experiencias de lujo personalizadas y servicios corporativos en todo el mundo.",
+    "analysis": {
+      "score": 78,
+      "problemas": [
+        "Falta de un portal digital exclusivo y privado para clientes VIP, limitando la visualización interactiva y en tiempo real de sus itinerarios personalizados de lujo.",
+        "El proceso de captación de preferencias mediante la web es pasivo y estático, dependiendo de un formulario genérico o de la descarga de un catálogo en formato PDF.",
+        "Flujos de trabajo internos de cotización y armado de itinerarios altamente personalizados que probablemente dependen de procesos manuales y comunicación descentralizada.",
+        "Ausencia de una pasarela de pagos integrados de alta gama para asegurar de manera ágil y segura las señas de servicios exclusivos y de alta facturación."
+      ],
+      "oportunidades": [
+        "Desarrollar un Portal de Clientes VIP interactivo donde los viajeros visualicen sus rutas día a día, con mapas interactivos, reservas de hoteles, vuelos exclusivos y chat de soporte en tiempo real.",
+        "Implementar un cotizador inteligente inmersivo de viajes ('Shape Your Experience') que califique al prospecto y simule un pre-itinerario de forma interactiva antes del contacto humano.",
+        "Integración automatizada con APIs de aerolíneas privadas, cadenas hoteleras de lujo y DMCs asociados para centralizar tarifas y acelerar los tiempos de cotización interna.",
+        "Creación de un sistema automatizado de generación de documentos de viaje digitales elegantes y dinámicos para reemplazar los archivos PDF tradicionales."
+      ],
+      "software_sugerido": [
+        "Portal de Cliente VIP Premium (Software a Medida / SaaS): Plataforma exclusiva y responsiva diseñada para que los viajeros de NUBA gestionen de forma interactiva sus itinerarios minuciosamente personalizados, accedan a sus documentos de viaje y chateen directo con su consultor asignado.",
+        "Sistema de Gestión de Itinerarios y Cotizador Automatizado (Sistemas de Gestión / Automatizaciones): Panel interno optimizado para los diseñadores de viajes de NUBA, que permite arrastrar, soltar y combinar experiencias, hoteles y vuelos exclusivos, generando propuestas visuales dinámicas de presupuesto en minutos."
+      ],
+      "emailDraft": "Asunto: Ideas para digitalizar la experiencia de viaje premium en NUBA ✈️\n\nHola gente de NUBA,\n\nEstuve navegando por su sitio web y quedé fascinado con las experiencias tan extraordinarias que diseñan, como los viajes a la Antártida y los vuelos de Virgin Galactic. ¡Realmente redefinen el concepto del lujo!\n\nSin embargo, analizando su ecosistema digital, notamos un par de detalles que podrían estar limitando la experiencia de sus clientes más exigentes. Actualmente, el proceso para diseñar los itinerarios a medida y descargar sus catálogos sigue viéndose un poco estático y manual. Para un viajero VIP, la exclusividad también debe sentirse en el canal digital.\n\nEn iWEB nos especializamos en desarrollar Software a Medida y Portales de Cliente de gama premium. Nos encantaría ayudarles a crear un Portal de Clientes VIP donde sus viajeros puedan visualizar interactivamente sus itinerarios minuto a minuto en tiempo real, centralizar sus documentos de viaje y chatear directo con su diseñador de viajes. Además, podemos automatizar el backend de su negocio para que sus asesores armen y coticen estas propuestas complejas en minutos en lugar de días.\n\n¿Les parece si charlamos unos 10 minutos esta semana para pelotear estas ideas sin ningún tipo de compromiso?\n\n¡Un saludo!\n\nEl equipo de iWEB"
+    }
+  },
+  {
+    "name": "COCHA",
+    "web": "https://www.cocha.com",
+    "email": "",
+    "phone": "+56 2 2464 1300",
+    "category": "Agencia de Viajes",
+    "description": "COCHA es una de las principales agencias de viajes en Chile, dedicada a la venta de vuelos, paquetes turísticos, hoteles, asistencia de viaje y arriendo de autos, ofreciendo asesoramiento de expertos y opciones de financiamiento en cuotas.",
+    "analysis": {
+      "score": 55,
+      "problemas": [
+        "Alta dependencia de canales de atención humana tradicional (teléfono, WhatsApp manual y tiendas físicas) para resolver dudas, cotizaciones y asistencia 24/7, lo que limita la escalabilidad y aumenta los costos operativos.",
+        "Falta de un portal corporativo completamente automatizado y de autoservicio que permita a los clientes de COCHA Corporate visualizar de forma autónoma analíticas complejas de sus gastos de viaje sin intermediación constante."
+      ],
+      "oportunidades": [
+        "Implementación de flujos de automatización e Inteligencia Artificial en canales conversacionales (WhatsApp) para filtrar, calificar e incluso cerrar cotizaciones estándar de viajes, liberando tiempo de los expertos para casos complejos.",
+        "Creación de una plataforma de BI (Business Intelligence) y dashboards interactivos embebidos para la división Corporate, incrementando el valor percibido del servicio B2B mediante analíticas de ahorro en tiempo real."
+      ],
+      "software_sugerido": [
+        "Automatizaciones: Bot conversacional inteligente para WhatsApp y Web integrado a su motor de reservas, capaz de autogestionar el 40% de las consultas repetitivas de clientes (itinerarios, políticas de equipaje, cambios sencillos) antes de derivar con un experto.",
+        "Dashboards: Plataforma analítica SaaS para COCHA Corporate que permita a sus empresas clientes visualizar KPIs de ahorro de costos, tendencias de destinos frecuentes y reportes de sustentabilidad de manera 100% automatizada."
+      ],
+      "emailDraft": "Asunto: Optimizando la experiencia digital y el canal B2B de COCHA\n\nHola gente de COCHA,\n\nEstuve analizando su sitio web y la enorme presencia que tienen en la industria de viajes en Chile. Nos encanta cómo combinan la tecnología con el valor del asesoramiento experto personalizado.\n\nSin embargo, notamos que mantener esa promesa de soporte 24/7 y atención por WhatsApp y teléfono genera una carga operativa gigante sobre sus agentes, especialmente durante temporadas altas o eventos como Cyber Monday. Por otro lado, vemos una gran oportunidad para potenciar COCHA Corporate entregando herramientas digitales más avanzadas para las empresas que viajan con ustedes.\n\nEn iWEB nos especializamos en construir Software a Medida, Automatizaciones de procesos y Dashboards analíticos. Creemos que podríamos ayudarlos en dos frentes específicos:\n1. Diseñar un sistema de automatización con IA en sus canales de chat para pre-clasificar consultas de clientes y resolver dudas de soporte comunes al instante.\n2. Desarrollar un portal corporativo interactivo (Dashboard) donde sus clientes B2B puedan monitorear sus gastos, presupuestos y ahorros de viaje de manera autónoma.\n\n¿Tendrían disponibilidad para una breve charla de 10 minutos la próxima semana? Nos encantaría compartirles un par de ideas técnicas que podrían aliviar la carga de sus ejecutivos y potenciar la retención de sus clientes B2B.\n\nUn saludo,\n\nEl equipo de iWEB"
+    }
+  },
+  {
+    "name": "RISA Travel",
+    "web": "https://www.risatravel.com",
+    "email": "customer.service@risatravel.com",
+    "phone": "+1 305-306-2222",
+    "category": "Agencia de viajes",
+    "description": "Agencia de viajes familiar con sede en Miami que ofrece paquetes vacacionales y viajes grupales a destinos como Punta Cana, Dubái y Europa con facilidades de pago flexibles.",
+    "analysis": {
+      "score": 40,
+      "problemas": [
+        "No se pudo realizar el análisis automático debido a un error de comunicación con el servicio de IA."
+      ],
+      "oportunidades": [
+        "Actualizar canales digitales."
+      ],
+      "software_sugerido": [
+        "Desarrollo web corporativo moderno por iWEB."
+      ],
+      "emailDraft": "Asunto: Solución tecnológica personalizada para RISA Travel\n\nHola equipo de RISA Travel,\n\nEstuvimos viendo su sitio web y notamos oportunidades para optimizar sus procesos digitales y potenciar sus conversiones.\n\nEn iWEB desarrollamos software y automatizaciones a medida para eliminar tareas manuales repetitivas.\n\n¿Tendrían disponibilidad para una breve charla de 10 minutos esta semana?\n\nAtentamente,\nEl equipo de iWEB"
+    }
+  },
+  {
+    "name": "Monica Travel",
+    "web": "https://www.monicatravel.com",
+    "email": "monica@monicatravel.com",
+    "phone": "+1 (301) 294-1166",
+    "category": "Agencia de Viajes",
+    "description": "Agencia de viajes dirigida al mercado latino en los Estados Unidos que ofrece boletos aéreos, paquetes turísticos todo incluido y vuelos baratos hacia Centroamérica, Sudamérica, el Caribe, Europa y Medio Oriente.",
+    "analysis": {
+      "score": 88,
+      "problemas": [
+        "Ausencia de un motor de reservas y pasarela de pagos online para procesar las ventas de vuelos y paquetes turísticos de forma directa y desatendida.",
+        "Proceso de cotización y cierre de ventas altamente manual, obligando al usuario a comunicarse por WhatsApp o teléfono (+1 301 / +1 703) para concretar la compra.",
+        "Falta de un portal de clientes donde los viajeros puedan consultar itinerarios, descargar boletos aéreos y gestionar la documentación de sus viajes.",
+        "Baja automatización en la precalificación de leads, lo que genera una alta carga de trabajo operativa para el equipo de ventas atendiendo consultas repetitivas."
+      ],
+      "oportunidades": [
+        "Implementación de un cotizador y motor de reservas automatizado en la web para capturar compras de vuelos y tours las 24 horas del día.",
+        "Integración de pasarelas de pago internacionales (Stripe, Authorize.Net, etc.) para asegurar depósitos o pagos completos de paquetes de alto valor (como los tours a Egipto, China y Europa de más de $2,000 USD).",
+        "Automatización de la atención inicial al cliente mediante agentes de IA en WhatsApp para agilizar la cotización de pasajes hacia Centro y Sudamérica.",
+        "Creación de un portal de autogestión para los clientes recurrentes, fomentando la fidelidad y centralizando la entrega de itinerarios y seguros de viaje."
+      ],
+      "software_sugerido": [
+        "Plataforma de Ecommerce y Reservas de Viajes (Desarrollo Web / Software a Medida): Un motor de reservas dinámico e intuitivo integrado a su sitio web, que permita a los clientes seleccionar fechas, ver precios reales de boletos y tours, y realizar el pago seguro de manera 100% online.",
+        "CRM de Gestión de Viajeros e Itinerarios (Sistemas de Gestión): Una plataforma interna centralizada para que los agentes de viajes administren el historial de los más de 300,000 clientes, asignen guías, gestionen reservas con aerolíneas y automaticen el envío de documentación por correo o WhatsApp.",
+        "Asistente de IA de WhatsApp y Cotizador Automatizado (Automatizaciones): Un bot inteligente conectado a sus sistemas que guíe al usuario en la búsqueda de vuelos baratos e itinerarios a Centroamérica, precalificando al prospecto antes de derivarlo a un agente humano."
+      ],
+      "emailDraft": "Asunto: Reservas online automáticas para los clientes de Monica Travel ✈️\n\nHola equipo de Monica Travel,\n\nEstuve analizando su sitio web y es realmente impresionante la trayectoria que tienen: ¡más de 31 años de experiencia y 300,000 viajeros felices en la zona de DC, Maryland y Virginia es un logro gigante!\n\nAl revisar su plataforma actual, noté que tienen ofertas increíbles de vuelos directos (como los de El Salvador o Guatemala) y paquetes espectaculares a destinos como China y Egipto. Sin embargo, vi que para que un cliente concrete la reserva o compre un pasaje, necesariamente tiene que llamarlos por teléfono o escribirles por WhatsApp. En la era digital actual, esto puede estar haciéndoles perder ventas de viajeros que prefieren comprar o reservar de inmediato con un par de clics, especialmente fuera del horario de oficina.\n\nEn iWEB nos especializamos en ayudar a agencias de viajes a dar el siguiente paso tecnológico. Podemos desarrollar para ustedes un Motor de Reservas y Pagos en línea integrado directamente en su web, o un Cotizador Inteligente vía WhatsApp para que su equipo no pierda tiempo respondiendo las mismas preguntas básicas una y otra vez.\n\n¿Se animan a que tengamos una breve charla de 10 minutos la próxima semana para mostrarles cómo podríamos implementarlo y ayudarles a multiplicar sus ventas mensuales de forma automática?\n\nUn saludo,\n\nEl equipo de iWEB"
+    }
+  },
+  {
+    "name": "ABC Travel",
+    "web": "https://www.abctravelep.com?lang=en",
+    "email": "info@abctravelep.com",
+    "phone": "(915) 304-0179",
+    "category": "Agencia de viajes",
+    "description": "ABC Travel es una agencia de viajes que ofrece paquetes turísticos personalizados y prediseñados para todo tipo de aventuras, adaptándose tanto a viajeros solitarios como a grupos grandes.",
+    "analysis": {
+      "score": 95,
+      "problemas": [
+        "Contenido desactualizado en la web con promociones que hacen referencia al año 2023 (Turquía, Egipto).",
+        "Grave error de consistencia en el diseño/copia del sitio, mostrando un texto sobre '2 años de garantía en lentes' en una página de agencia de viajes.",
+        "Proceso de reserva y cotización completamente manual y telefónico, sin posibilidad de cotizar o reservar paquetes online."
+      ],
+      "oportunidades": [
+        "Implementar un cotizador de viajes en tiempo real que permita a los usuarios armar su itinerario a medida.",
+        "Integrar una pasarela de pagos segura y automatizada para reservas inmediatas sin fricción.",
+        "Rediseñar la plataforma web para adaptarla a dispositivos móviles y optimizar el posicionamiento en buscadores (SEO)."
+      ],
+      "software_sugerido": [
+        "Plataforma Web a Medida con Cotizador y Creador de Itinerarios: Un sistema interactivo donde los viajeros eligen destinos, días y actividades, obteniendo un precio estimado al instante.",
+        "Sistema de Gestión de Clientes (CRM) y Reservas con Pasarela de Pagos: Un software interno (ERP/CRM) para gestionar la disponibilidad de guías, hoteles y procesar cobros automáticos de forma integrada."
+      ],
+      "emailDraft": "Asunto: ABC Travel: ¿Cómo automatizar sus reservas y mejorar la experiencia web?\n\nHola gente de ABC Travel,\n\nEstuve revisando su sitio web y me encantó la propuesta de viajes personalizados que ofrecen. Sin embargo, analizando la página con ojos de arquitecto de software, noté un par de detalles que podrían estar haciéndoles perder clientes. \n\nPor un lado, vi que todavía figuran promociones del 2023 y se coló un texto extraño sobre una \"garantía de lentes\" que no tiene relación con viajes. Por otro lado, hoy en día los viajeros buscan inmediatez, y al no contar con un cotizador online o un sistema de reservas directo, obligan al usuario a tener que llamar por teléfono, lo que genera mucha fricción.\n\nEn iWEB nos especializamos en transformar sitios web en verdaderas máquinas de venta. Podríamos desarrollar para ustedes un Cotizador de Itinerarios a Medida integrado con una pasarela de pagos. De esta forma, sus clientes podrían diseñar su viaje ideal, ver el precio real y reservarlo en el momento de forma 100% digital.\n\n¿Les interesaría que charlemos 10 minutos esta semana para contarles cómo podríamos implementarlo de forma sencilla?\n\nUn saludo,\nEl equipo de iWEB"
+    }
+  }
+]

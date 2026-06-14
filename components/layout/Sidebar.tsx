@@ -9,6 +9,7 @@ import {
   LogoutIcon,
   PerformanceIcon,
   ProjectsIcon,
+  MarketingIcon,
 } from "@/components/icons/SidebarIcons";
 import { useLanguage } from "@/lib/LanguageContext";
 
@@ -32,6 +33,11 @@ const navItems = [
     translationKey: "rendimiento",
     href: "/dashboard/rendimiento",
     icon: PerformanceIcon,
+  },
+  {
+    translationKey: "marketing",
+    href: "/dashboard/marketing",
+    icon: MarketingIcon,
   },
 ];
 
