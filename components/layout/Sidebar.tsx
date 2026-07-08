@@ -41,7 +41,7 @@ const navItems = [
   },
 ];
 
-export function Sidebar() {
+export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useLanguage();
@@ -58,72 +58,88 @@ export function Sidebar() {
     router.push("/login");
   }
   return (
-    <aside className="fixed left-0 top-0 z-20 h-screen w-[280px] border-r border-white/10 bg-[#050808] px-5 py-6">
-      <div className="mb-8 rounded-2xl border border-cyan-400/10 bg-cyan-400/[0.03] p-5">
-  <div className="flex items-center gap-4">
-    <div className="relative h-10 w-20">
-      <Image
-        src="/logos/iweb-logo.png"
-        alt="iWeb"
-        fill
-        className="object-contain"
-        priority
-      />
-    </div>
+    <>
+      {/* Backdrop overlay for mobile */}
+      {isOpen && (
+        <div
+          onClick={onClose}
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+        />
+      )}
 
-    <div>
-      <p className="text-lg font-black tracking-tight text-white">
-        {t("panelDeControl")}
-      </p>
-      <p className="text-xs text-zinc-500">
-        {t("controlInterno")}
-      </p>
-    </div>
-  </div>
-</div>
+      <aside
+        className={`fixed left-0 top-0 z-50 h-screen w-[280px] border-r border-white/10 bg-[#050808] px-5 py-6 transition-transform duration-300 lg:translate-x-0 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="mb-8 rounded-2xl border border-cyan-400/10 bg-cyan-400/[0.03] p-5">
+          <div className="flex items-center gap-4">
+            <div className="relative h-10 w-20">
+              <Image
+                src="/logos/iweb-logo.png"
+                alt="iWeb"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
 
-      <nav className="space-y-2">
-        {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
+            <div>
+              <p className="text-lg font-black tracking-tight text-white">
+                {t("panelDeControl")}
+              </p>
+              <p className="text-xs text-zinc-500">
+                {t("controlInterno")}
+              </p>
+            </div>
+          </div>
+        </div>
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`group relative flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm transition ${
-                isActive
-                  ? "border border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-200 shadow-[0_0_24px_rgba(0,221,235,0.08)]"
-                  : "border border-transparent text-zinc-500 hover:border-white/10 hover:bg-white/[0.04] hover:text-white"
-              }`}
-            >
-              {isActive && (
-                <span className="absolute left-0 top-1/2 h-8 w-[3px] -translate-y-1/2 rounded-full bg-cyan-300" />
-              )}
+        <nav className="space-y-2">
+          {navItems.map((item) => {
+            const isActive = pathname.startsWith(item.href);
 
-              <span
-  className={`flex h-9 w-9 items-center justify-center rounded-xl ${
-    isActive
-      ? "bg-cyan-400/15 text-cyan-200"
-      : "bg-white/[0.04] text-zinc-500 group-hover:text-white"
-  }`}
->
-  <item.icon className="h-5 w-5" />
-</span>
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onClose}
+                className={`group relative flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm transition ${
+                  isActive
+                    ? "border border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-200 shadow-[0_0_24px_rgba(0,221,235,0.08)]"
+                    : "border border-transparent text-zinc-500 hover:border-white/10 hover:bg-white/[0.04] hover:text-white"
+                }`}
+              >
+                {isActive && (
+                  <span className="absolute left-0 top-1/2 h-8 w-[3px] -translate-y-1/2 rounded-full bg-cyan-300" />
+                )}
 
-              <span className="font-medium">{t(item.translationKey)}</span>
-            </Link>
-          );
-        })}
-      </nav>
+                <span
+                  className={`flex h-9 w-9 items-center justify-center rounded-xl ${
+                    isActive
+                      ? "bg-cyan-400/15 text-cyan-200"
+                      : "bg-white/[0.04] text-zinc-500 group-hover:text-white"
+                  }`}
+                >
+                  <item.icon className="h-5 w-5" />
+                </span>
 
-      <div className="absolute bottom-6 left-5 right-5">
-        <button 
-        onClick={handleLogout}
-        className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm text-zinc-500 transition hover:bg-white/[0.06] hover:text-white cursor-pointer">
-  <LogoutIcon className="h-5 w-5" />
-  <span>{t("cerrarSesion")}</span>
-</button>
-      </div>
-    </aside>
+                <span className="font-medium">{t(item.translationKey)}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="absolute bottom-6 left-5 right-5">
+          <button 
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm text-zinc-500 transition hover:bg-white/[0.06] hover:text-white cursor-pointer"
+          >
+            <LogoutIcon className="h-5 w-5" />
+            <span>{t("cerrarSesion")}</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

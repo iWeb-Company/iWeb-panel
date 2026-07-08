@@ -77,7 +77,7 @@ export default function LoginPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-[560px] rounded-[24px] border border-cyan-400/15 bg-[#071010] p-10 shadow-[0_32px_100px_rgba(0,0,0,0.45)]"
+          className="w-full max-w-[560px] rounded-[24px] border border-cyan-400/15 bg-[#071010] p-6 sm:p-10 shadow-[0_32px_100px_rgba(0,0,0,0.45)]"
         >
           <div className="space-y-8">
             <div>

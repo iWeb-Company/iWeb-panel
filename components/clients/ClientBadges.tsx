@@ -9,7 +9,7 @@ export function ProductBadge({ product }: { product: ClientProduct }) {
 
   return (
     <span
-      className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider ${styles[product]}`}
+      className={`inline-block whitespace-nowrap rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider ${styles[product]}`}
     >
       {product}
     </span>
@@ -21,7 +21,7 @@ export function ClientStatusBadge({ status }: { status: ClientStatus }) {
 
   return (
     <span
-      className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider ${
+      className={`inline-block whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider ${
         isActive
           ? "bg-emerald-400/10 text-emerald-400"
           : "bg-zinc-500/10 text-zinc-500"

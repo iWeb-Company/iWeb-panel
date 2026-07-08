@@ -18,7 +18,7 @@ export function ProjectsTable({
   const { t } = useLanguage();
 
   return (
-    <div className="overflow-hidden rounded-xl border border-white/10 w-full bg-black/20">
+    <div className="overflow-x-auto rounded-xl border border-white/10 w-full bg-black/20">
       <table className="w-full text-left text-sm table-auto">
         <thead className="bg-white/[0.03] text-xs uppercase tracking-[0.2em] text-zinc-500">
           <tr>

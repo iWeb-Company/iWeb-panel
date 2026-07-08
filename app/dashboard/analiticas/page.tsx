@@ -247,9 +247,9 @@ export default function AnaliticasPage() {
         icon={<AnalyticsIcon className="h-5 w-5" />}
       />
 
-      <section className="grid grid-cols-[1.65fr_1fr] items-stretch gap-5">
+      <section className="grid grid-cols-1 lg:grid-cols-[1.65fr_1fr] items-stretch gap-5">
         <Card className="flex min-h-[360px] flex-col justify-between overflow-hidden bg-[#1D2A2B]/80 p-8">
-          <div className="flex items-start justify-between gap-6">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">
                 {t("ingresosEstimados")}
@@ -372,7 +372,7 @@ export default function AnaliticasPage() {
         </div>
       </Card>
 
-      <section className="grid grid-cols-4 gap-5">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <StatCard
           title={t("clientesActivos")}
           value={String(activeClientsCount)}

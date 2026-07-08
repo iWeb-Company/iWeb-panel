@@ -14,9 +14,9 @@ export function PageHeader({
   actions,
 }: PageHeaderProps) {
   return (
-    <header className="flex items-start justify-between">
+    <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
       <div className="flex items-start gap-4">
-        <div className="mt-1 flex h-10 w-10 items-center justify-center rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-300">
+        <div className="mt-1 flex h-10 w-10 items-center justify-center rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-300 shrink-0">
           {icon}
         </div>
 
@@ -25,7 +25,7 @@ export function PageHeader({
             {eyebrow}
           </p>
 
-          <h1 className="mt-2 text-4xl font-semibold tracking-tight text-white">
+          <h1 className="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight text-white">
             {title}
           </h1>
 
@@ -33,7 +33,7 @@ export function PageHeader({
         </div>
       </div>
 
-      {actions && <div className="flex gap-3">{actions}</div>}
+      {actions && <div className="flex flex-wrap gap-2 sm:gap-3">{actions}</div>}
     </header>
   );
 }

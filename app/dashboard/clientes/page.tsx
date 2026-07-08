@@ -178,7 +178,7 @@ export default function ClientesPage() {
         }
       />
 
-      <section className="grid grid-cols-3 gap-5">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         <StatCard
           title={t("totalClientes")}
           value={clients.length}
@@ -202,8 +202,8 @@ export default function ClientesPage() {
       </section>
 
       <Card>
-        <div className="mb-5 flex items-center justify-between gap-4">
-          <div className="flex gap-2">
+        <div className="mb-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex flex-wrap gap-2">
             {availableFilters.map((filter) => (
               <button
                 key={filter}
@@ -223,7 +223,7 @@ export default function ClientesPage() {
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             placeholder={t("buscarNombreId")}
-            className="w-[320px] rounded-xl border border-white/10 bg-black/30 px-4 py-2 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-cyan-400/30"
+            className="w-full md:w-[320px] rounded-xl border border-white/10 bg-black/30 px-4 py-2 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-cyan-400/30"
           />
         </div>
 

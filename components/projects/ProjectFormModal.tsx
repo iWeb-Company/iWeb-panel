@@ -127,7 +127,7 @@ export function ProjectFormModal({
       onClose={onClose}
     >
       <form onSubmit={handleSubmit} className="max-h-[75vh] overflow-y-auto pr-2 space-y-5">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="mb-2 block text-xs uppercase tracking-[0.25em] text-zinc-500">
               {t("nombre")}
@@ -153,7 +153,7 @@ export function ProjectFormModal({
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="mb-2 block text-xs uppercase tracking-[0.25em] text-zinc-500">
               {t("categoria")}
@@ -204,7 +204,7 @@ export function ProjectFormModal({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="mb-2 block text-xs uppercase tracking-[0.25em] text-zinc-500">
               {t("cuit")}
@@ -234,7 +234,7 @@ export function ProjectFormModal({
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="mb-2 block text-xs uppercase tracking-[0.25em] text-zinc-500">
               {t("fechaInicio")}
@@ -272,7 +272,7 @@ export function ProjectFormModal({
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="mb-2 block text-xs uppercase tracking-[0.25em] text-zinc-500">
               {t("presupuesto")}
@@ -310,7 +310,7 @@ export function ProjectFormModal({
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="mb-2 block text-xs uppercase tracking-[0.25em] text-zinc-500">
               {t("mantencion")}
@@ -365,7 +365,7 @@ export function ProjectFormModal({
           {availableContainers.length === 0 ? (
             <p className="text-sm text-zinc-600">No se detectaron contenedores activos</p>
           ) : (
-            <div className="grid grid-cols-2 gap-3 max-h-40 overflow-y-auto border border-white/10 rounded-xl bg-black/20 p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-40 overflow-y-auto border border-white/10 rounded-xl bg-black/20 p-4">
               {availableContainers.map((container) => {
                 const isSelected = selectedContainers.includes(container.name) || selectedContainers.includes(container.id);
                 return (

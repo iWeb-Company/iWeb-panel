@@ -383,16 +383,16 @@ export default function MarketingPage() {
       {activeTab === "leads" && (
         <Card>
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-left text-sm min-w-[700px]">
               <thead>
                 <tr className="border-b border-white/10 text-zinc-400">
-                  <th className="pb-4 font-semibold">Empresa</th>
-                  <th className="pb-4 font-semibold">Categoría</th>
-                  <th className="pb-4 font-semibold">Sitio Web</th>
-                  <th className="pb-4 font-semibold">Email</th>
-                  <th className="pb-4 font-semibold">Fecha de Hallazgo</th>
-                  <th className="pb-4 font-semibold text-center">Score</th>
-                  <th className="pb-4 font-semibold text-center">Acciones</th>
+                  <th className="pb-4 pr-4 font-semibold whitespace-nowrap">Empresa</th>
+                  <th className="pb-4 pr-4 font-semibold whitespace-nowrap">Categoría</th>
+                  <th className="pb-4 pr-4 font-semibold whitespace-nowrap">Sitio Web</th>
+                  <th className="pb-4 pr-4 font-semibold whitespace-nowrap">Email</th>
+                  <th className="pb-4 pr-4 font-semibold whitespace-nowrap">Fecha de Hallazgo</th>
+                  <th className="pb-4 pr-4 font-semibold text-center whitespace-nowrap">Score</th>
+                  <th className="pb-4 pr-4 font-semibold text-center whitespace-nowrap">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -404,14 +404,14 @@ export default function MarketingPage() {
 
                     return (
                       <tr key={idx} className="group hover:bg-white/[0.01]">
-                        <td className="py-4">
-                          <div className="font-bold text-white">{lead.name}</div>
+                        <td className="py-4 pr-4">
+                          <div className="font-bold text-white whitespace-nowrap">{lead.name}</div>
                           <div className="max-w-[280px] truncate text-xs text-zinc-500">
                             {lead.description}
                           </div>
                         </td>
-                        <td className="py-4 text-zinc-300">{lead.category}</td>
-                        <td className="py-4">
+                        <td className="py-4 pr-4 text-zinc-300 whitespace-nowrap">{lead.category}</td>
+                        <td className="py-4 pr-4 whitespace-nowrap">
                           <a
                             href={lead.web}
                             target="_blank"
@@ -421,15 +421,15 @@ export default function MarketingPage() {
                             🔗 {lead.web.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]}
                           </a>
                         </td>
-                        <td className="py-4 text-zinc-300">
+                        <td className="py-4 pr-4 text-zinc-300 whitespace-nowrap">
                           {lead.email ? (
                             lead.email
                           ) : (
                             <span className="italic text-zinc-600">Sin email</span>
                           )}
                         </td>
-                        <td className="py-4 text-zinc-500">{lead.date}</td>
-                        <td className="py-4 text-center">
+                        <td className="py-4 pr-4 text-zinc-500 whitespace-nowrap">{lead.date}</td>
+                        <td className="py-4 pr-4 text-center whitespace-nowrap">
                           <span
                             className={`inline-block rounded-full px-2.5 py-1 text-xs font-bold ${
                               isHigh
@@ -442,7 +442,7 @@ export default function MarketingPage() {
                             {score}
                           </span>
                         </td>
-                        <td className="py-4 text-center">
+                        <td className="py-4 pr-4 text-center whitespace-nowrap">
                           <div className="flex items-center justify-center gap-2">
                             <button
                               onClick={() => setSelectedLead(lead)}
