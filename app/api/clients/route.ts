@@ -4,7 +4,8 @@ import type { Client, ProvisioningResult } from "@/types/client";
 
 const TRAVELNETT_API_BASE =
   process.env.TRAVELNETT_API_URL ||
-  "http://127.0.0.1:8012/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Tranett/api";
+  "https://tranett.com/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Tranett/api";
+
 
 // GET /api/clients - Fetch all clients
 export async function GET() {
