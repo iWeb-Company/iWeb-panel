@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import type { Client } from "@/types/client";
+import type { Client, ProvisioningResult } from "@/types/client";
 import { getStoredClients, setStoredClients } from "@/lib/storage";
 
 import { Card } from "@/components/ui/Card";
@@ -11,6 +11,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 import { ClientsTable } from "@/components/clients/ClientsTable";
 import { ClientFormModal } from "@/components/clients/ClientFormModal";
+import { ProvisioningSummaryModal } from "@/components/clients/ProvisioningSummaryModal";
 
 import {
   ClientsIcon,
@@ -27,6 +28,7 @@ export default function ClientesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
+  const [provisioningResult, setProvisioningResult] = useState<ProvisioningResult | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("Todos");
   const { t, language } = useLanguage();
@@ -45,6 +47,7 @@ export default function ClientesPage() {
       const matchesSearch =
         client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         client.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (client.slug && client.slug.toLowerCase().includes(searchTerm.toLowerCase())) ||
         client.responsible.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesFilter =
@@ -82,27 +85,21 @@ export default function ClientesPage() {
     }).format(total);
   }, [clients, language]);
 
-  function handleSaveClient(client: Client) {
-    const exists = clients.some((item) => item.id === client.id);
-    const method = exists ? "PUT" : "POST";
+  function handleSaveClient(savedClient: Client, provisioning?: ProvisioningResult) {
+    setClients((current) => {
+      const exists = current.some((item) => item.id === savedClient.id);
+      if (exists) {
+        return current.map((item) => (item.id === savedClient.id ? savedClient : item));
+      } else {
+        return [savedClient, ...current];
+      }
+    });
 
-    fetch("/api/clients", {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(client),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        setClients((current) => {
-          if (exists) {
-            return current.map((item) => (item.id === client.id ? client : item));
-          } else {
-            return [client, ...current];
-          }
-        });
-      })
-      .catch((err) => console.error("Error saving client:", err));
+    if (provisioning) {
+      setProvisioningResult(provisioning);
+    }
   }
+
 
   function handleCreateClient() {
     setEditingClient(null);
@@ -248,6 +245,12 @@ export default function ClientesPage() {
         client={editingClient}
         onClose={() => setFormOpen(false)}
         onSave={handleSaveClient}
+      />
+
+      <ProvisioningSummaryModal
+        open={!!provisioningResult}
+        result={provisioningResult}
+        onClose={() => setProvisioningResult(null)}
       />
 
       <ConfirmDialog

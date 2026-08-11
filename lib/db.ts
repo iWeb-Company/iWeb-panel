@@ -87,11 +87,37 @@ function initializeDb() {
         responsible TEXT NOT NULL,
         monthly TEXT NOT NULL,
         product TEXT NOT NULL,
-        status TEXT NOT NULL
+        status TEXT NOT NULL,
+        slug TEXT,
+        folder_id INTEGER,
+        cuit TEXT,
+        email TEXT,
+        login_url TEXT,
+        admin_username TEXT,
+        logo_xl TEXT,
+        logo_s TEXT
       )
     `, (err) => {
       if (err) console.error("Error creating clients table:", err);
-      else seedClients();
+      else {
+        // Safe migrations for existing tables
+        const columns = [
+          "slug TEXT",
+          "folder_id INTEGER",
+          "cuit TEXT",
+          "email TEXT",
+          "login_url TEXT",
+          "admin_username TEXT",
+          "logo_xl TEXT",
+          "logo_s TEXT"
+        ];
+        columns.forEach((col) => {
+          db.run(`ALTER TABLE clients ADD COLUMN ${col}`, () => {
+            // Ignore error if column already exists
+          });
+        });
+        seedClients();
+      }
     });
 
     // 2. Create projects table
