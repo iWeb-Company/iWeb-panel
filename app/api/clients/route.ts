@@ -49,57 +49,59 @@ export async function POST(req: NextRequest) {
 
       // If product is Tranett, attempt to provision against the FastAPI backend
       if (product === "Tranett") {
-        try {
-          const backendForm = new FormData();
-          backendForm.append("name", name);
-          backendForm.append("cuit", cuit.replace(/[^0-9]/g, "") || "20000000001");
-          backendForm.append("email", email);
-          backendForm.append("status", status === "Activo" ? "true" : "false");
-          backendForm.append("slug", normalizedSlug);
-          backendForm.append("admin_username", adminUsername);
-          backendForm.append("admin_password", generatedPass);
+        const backendForm = new FormData();
+        backendForm.append("name", name);
+        const cleanCuit = cuit.replace(/[^0-9]/g, "");
+        if (cleanCuit) {
+          backendForm.append("cuit", cleanCuit);
+        }
+        backendForm.append("email", email);
+        backendForm.append("status", status === "Activo" ? "true" : "false");
+        backendForm.append("slug", normalizedSlug);
+        backendForm.append("admin_username", adminUsername);
+        backendForm.append("admin_password", generatedPass);
 
-          const logoXl = formData.get("logo_xl");
-          const logoS = formData.get("logo_s");
+        const logoXl = formData.get("logo_xl");
+        const logoS = formData.get("logo_s");
 
-          if (logoXl instanceof Blob && logoXl.size > 0) {
-            backendForm.append("logo_xl", logoXl);
-          } else {
-            // Provide a dummy 1x1 png blob if not provided
-            const dummyBlob = new Blob([new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10])], { type: "image/png" });
-            backendForm.append("logo_xl", dummyBlob, "logo_xl.png");
-          }
+        if (logoXl instanceof Blob && logoXl.size > 0) {
+          backendForm.append("logo_xl", logoXl);
+        }
 
-          if (logoS instanceof Blob && logoS.size > 0) {
-            backendForm.append("logo_s", logoS);
-          } else {
-            const dummyBlob = new Blob([new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10])], { type: "image/png" });
-            backendForm.append("logo_s", dummyBlob, "logo_s.png");
-          }
+        if (logoS instanceof Blob && logoS.size > 0) {
+          backendForm.append("logo_s", logoS);
+        }
 
-          const backendRes = await fetch(`${TRAVELNETT_API_BASE}/iweb-clients/provision`, {
-            method: "POST",
-            body: backendForm,
-          });
+        const backendRes = await fetch(`${TRAVELNETT_API_BASE}/iweb-clients/provision`, {
+          method: "POST",
+          body: backendForm,
+        });
 
-          if (backendRes.ok) {
-            provisioningData = await backendRes.json();
-            loginUrl = provisioningData.login_url || loginUrl;
-            if (provisioningData.admin_user?.initial_password) {
-              generatedPass = provisioningData.admin_user.initial_password;
-            }
-          } else {
-            console.warn("Backend provision returned non-200:", await backendRes.text());
-          }
-        } catch (fetchErr) {
-          console.warn("Could not reach FastAPI backend directly (running standalone mode):", fetchErr);
+        if (!backendRes.ok) {
+          const errorText = await backendRes.text();
+          let errorMsg = errorText;
+          try {
+            const parsed = JSON.parse(errorText);
+            errorMsg = parsed.detail || parsed.error || errorText;
+          } catch {}
+          console.error("Tranett provisioning failed:", errorMsg);
+          return NextResponse.json(
+            { error: `Error al aprovisionar tenant en Tranett: ${errorMsg}` },
+            { status: backendRes.status || 500 }
+          );
+        }
+
+        provisioningData = await backendRes.json();
+        loginUrl = provisioningData.login_url || loginUrl;
+        if (provisioningData.admin_user?.initial_password) {
+          generatedPass = provisioningData.admin_user.initial_password;
         }
       }
 
       const clientId = provisioningData?.client?.id || `CL-${Date.now()}`;
-      const folderId = provisioningData?.client?.folder_id || Math.floor(Date.now() / 1000) % 10000;
-      const logoXlUrl = provisioningData?.client?.logo_xl || `/tenants/${folderId}/logos/logo_xl.png`;
-      const logoSUrl = provisioningData?.client?.logo_s || `/tenants/${folderId}/logos/logo_s.png`;
+      const folderId = provisioningData?.client?.folder_id ?? null;
+      const logoXlUrl = provisioningData?.client?.logo_xl || (folderId ? `/tenants/${folderId}/logos/logo_xl.png` : null);
+      const logoSUrl = provisioningData?.client?.logo_s || (folderId ? `/tenants/${folderId}/logos/logo_s.png` : null);
 
       const newClient: Client = {
         id: clientId,
@@ -109,13 +111,13 @@ export async function POST(req: NextRequest) {
         product,
         status,
         slug: normalizedSlug,
-        folder_id: folderId,
+        folder_id: folderId ?? undefined,
         cuit,
         email,
         login_url: loginUrl,
         admin_username: adminUsername,
-        logo_xl: logoXlUrl,
-        logo_s: logoSUrl,
+        logo_xl: logoXlUrl || undefined,
+        logo_s: logoSUrl || undefined,
       };
 
       await run(
@@ -131,20 +133,20 @@ export async function POST(req: NextRequest) {
           newClient.product,
           newClient.status,
           newClient.slug,
-          newClient.folder_id,
-          newClient.cuit,
-          newClient.email,
-          newClient.login_url,
-          newClient.admin_username,
-          newClient.logo_xl,
-          newClient.logo_s,
+          newClient.folder_id ?? null,
+          newClient.cuit ?? null,
+          newClient.email ?? null,
+          newClient.login_url ?? null,
+          newClient.admin_username ?? null,
+          newClient.logo_xl ?? null,
+          newClient.logo_s ?? null,
         ]
       );
 
-      const provisionResult: ProvisioningResult = {
+      const provisionResult: ProvisioningResult = provisioningData || {
         client: newClient,
         admin_user: {
-          id: provisioningData?.admin_user?.id || `USR-${Date.now()}`,
+          id: `USR-${Date.now()}`,
           username: adminUsername,
           name: name,
           last_name: "Admin",

@@ -41,6 +41,7 @@ export function ClientFormModal({
   const [logoSPreview, setLogoSPreview] = useState<string | null>(client?.logo_s ?? null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStep, setSubmitStep] = useState<string>("");
+  const [errorMsg, setErrorMsg] = useState<string>("");
 
   useEffect(() => {
     setName(client?.name ?? "");
@@ -59,6 +60,7 @@ export function ClientFormModal({
     setLogoSPreview(client?.logo_s ?? null);
     setIsSubmitting(false);
     setSubmitStep("");
+    setErrorMsg("");
   }, [client, open]);
 
   // Auto-generate slug when name changes (if not editing an existing client)
@@ -170,7 +172,7 @@ export function ClientFormModal({
       onClose();
     } catch (err: any) {
       console.error("Error creating/updating client:", err);
-      alert(err.message || "Ocurrió un error al procesar el cliente.");
+      setErrorMsg(err.message || "Ocurrió un error al procesar el cliente.");
     } finally {
       setIsSubmitting(false);
       setSubmitStep("");
@@ -193,6 +195,12 @@ export function ClientFormModal({
       onClose={onClose}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
+        {errorMsg && (
+          <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-xs text-red-300">
+            <span className="font-semibold text-red-200">Error: </span>
+            {errorMsg}
+          </div>
+        )}
         {/* Selector de Producto & Estado */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>

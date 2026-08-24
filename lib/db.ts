@@ -2,7 +2,15 @@ import sqlite3 from "sqlite3";
 import path from "path";
 import fs from "fs";
 
-let dbPath = process.env.DB_PATH || "/opt/data/db.sqlite";
+let dbPath = process.env.DB_PATH;
+
+if (!dbPath) {
+  if (fs.existsSync("/opt/data")) {
+    dbPath = "/opt/data/db.sqlite";
+  } else {
+    dbPath = path.join(process.cwd(), "data", "db.sqlite");
+  }
+}
 
 // Fallback for Windows local development
 if (process.platform === "win32") {
@@ -15,8 +23,7 @@ try {
   if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true });
   }
-} catch (err) {
-  console.warn("Could not create database directory at " + dbDir + ", falling back to project local directory:", err);
+} catch {
   dbPath = path.join(process.cwd(), "data", "db.sqlite");
   const fallbackDir = path.dirname(dbPath);
   if (!fs.existsSync(fallbackDir)) {
