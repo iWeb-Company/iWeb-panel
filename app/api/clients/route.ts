@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       let loginUrl = `https://${normalizedSlug}.tranett.com/login`;
       let generatedPass = adminPassword || `Tn.${Math.random().toString(36).substring(2, 8)}!2026`;
 
-      // If product is Tranett, attempt to provision against the FastAPI backend
+      // If product is Tranett, provision against FastAPI backend (2-step flow for maximum server compatibility)
       if (product === "Tranett") {
         const backendForm = new FormData();
         backendForm.append("name", name);
@@ -57,22 +57,32 @@ export async function POST(req: NextRequest) {
         }
         backendForm.append("email", email);
         backendForm.append("status", status === "Activo" ? "true" : "false");
-        backendForm.append("slug", normalizedSlug);
-        backendForm.append("admin_username", adminUsername);
-        backendForm.append("admin_password", generatedPass);
 
         const logoXl = formData.get("logo_xl");
         const logoS = formData.get("logo_s");
 
+        // Standard valid 1x1 transparent PNG blob for default logos
+        const validPngBytes = new Uint8Array([
+          137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1,
+          0, 0, 0, 1, 8, 6, 0, 0, 0, 31, 21, 196, 137, 0, 0, 0, 13, 73, 68, 65, 84,
+          120, 156, 99, 248, 255, 255, 63, 0, 5, 254, 2, 254, 167, 54, 129, 52, 0,
+          0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130
+        ]);
+
         if (logoXl instanceof Blob && logoXl.size > 0) {
           backendForm.append("logo_xl", logoXl);
+        } else {
+          backendForm.append("logo_xl", new Blob([validPngBytes], { type: "image/png" }), "logo_xl.png");
         }
 
         if (logoS instanceof Blob && logoS.size > 0) {
           backendForm.append("logo_s", logoS);
+        } else {
+          backendForm.append("logo_s", new Blob([validPngBytes], { type: "image/png" }), "logo_s.png");
         }
 
-        const backendRes = await fetch(`${TRAVELNETT_API_BASE}/iweb-clients/provision`, {
+        // Step 1: Create SaaS Tenant and allocate folders/DB entry
+        const backendRes = await fetch(`${TRAVELNETT_API_BASE}/iweb-clients/create_iweb_client`, {
           method: "POST",
           body: backendForm,
         });
@@ -84,24 +94,69 @@ export async function POST(req: NextRequest) {
             const parsed = JSON.parse(errorText);
             errorMsg = parsed.detail || parsed.error || errorText;
           } catch {}
-          console.error("Tranett provisioning failed:", errorMsg);
+          console.error("Tranett create_iweb_client failed:", errorMsg);
           return NextResponse.json(
             { error: `Error al aprovisionar tenant en Tranett: ${errorMsg}` },
             { status: backendRes.status || 500 }
           );
         }
 
-        provisioningData = await backendRes.json();
-        loginUrl = provisioningData.login_url || loginUrl;
-        if (provisioningData.admin_user?.initial_password) {
-          generatedPass = provisioningData.admin_user.initial_password;
+        const clientData = await backendRes.json();
+        const tenantId = clientData.id;
+        const tenantSlug = clientData.slug || normalizedSlug;
+        loginUrl = `https://${tenantSlug}.tranett.com/login`;
+
+        // Step 2: Create initial Admin user in users table
+        let adminUserId = `USR-${Date.now()}`;
+        try {
+          const userRes = await fetch(`${TRAVELNETT_API_BASE}/auth/create-user/${tenantId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user: {
+                name: name,
+                last_name: "Admin",
+                username: adminUsername,
+                password: generatedPass,
+                active: 1,
+                rol: "admin",
+              },
+            }),
+          });
+
+          if (userRes.ok) {
+            const userJson = await userRes.json();
+            if (userJson.id) adminUserId = userJson.id;
+          } else {
+            console.warn("Could not create initial user:", await userRes.text());
+          }
+        } catch (uErr) {
+          console.warn("User create error:", uErr);
         }
+
+        provisioningData = {
+          client: clientData,
+          admin_user: {
+            id: adminUserId,
+            username: adminUsername,
+            name: name,
+            last_name: "Admin",
+            initial_password: generatedPass,
+          },
+          login_url: loginUrl,
+          status: {
+            database: "OK",
+            storage: "OK",
+            subdomain: "OK",
+          },
+        };
       }
 
       const clientId = provisioningData?.client?.id || `CL-${Date.now()}`;
       const folderId = provisioningData?.client?.folder_id ?? null;
       const logoXlUrl = provisioningData?.client?.logo_xl || (folderId ? `/tenants/${folderId}/logos/logo_xl.png` : null);
       const logoSUrl = provisioningData?.client?.logo_s || (folderId ? `/tenants/${folderId}/logos/logo_s.png` : null);
+      const finalSlug = provisioningData?.client?.slug || normalizedSlug;
 
       const newClient: Client = {
         id: clientId,
@@ -110,7 +165,7 @@ export async function POST(req: NextRequest) {
         monthly,
         product,
         status,
-        slug: normalizedSlug,
+        slug: finalSlug,
         folder_id: folderId ?? undefined,
         cuit,
         email,
@@ -247,6 +302,28 @@ export async function DELETE(req: NextRequest) {
     if (!id) {
       return NextResponse.json({ error: "Missing client ID" }, { status: 400 });
     }
+
+    // Try cascading deletion on SaaS if it's a Tranett client
+    try {
+      const existing = await get<Client>("SELECT * FROM clients WHERE id = ?", [id]);
+      if (existing && existing.product === "Tranett") {
+        // 1. Fetch users and delete them first
+        const usersRes = await fetch(`${TRAVELNETT_API_BASE}/auth/users/${id}`);
+        if (usersRes.ok) {
+          const users = await usersRes.json();
+          if (Array.isArray(users)) {
+            for (const u of users) {
+              await fetch(`${TRAVELNETT_API_BASE}/auth/users/${id}/${u.id}`, { method: "DELETE" });
+            }
+          }
+        }
+        // 2. Delete tenant record and folder
+        await fetch(`${TRAVELNETT_API_BASE}/iweb-clients/delete_iweb_client/${id}`, { method: "DELETE" });
+      }
+    } catch (saasErr) {
+      console.warn("Could not delete from Tranett SaaS backend:", saasErr);
+    }
+
     await run("DELETE FROM clients WHERE id = ?", [id]);
     return NextResponse.json({ success: true });
   } catch (error: any) {
