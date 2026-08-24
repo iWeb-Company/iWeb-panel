@@ -122,8 +122,9 @@ export function ClientFormModal({
         formData.append("status", status);
         formData.append("slug", slug || name.toLowerCase().replace(/\s+/g, "_"));
         formData.append("cuit", cuit);
-        formData.append("email", email);
-        formData.append("admin_username", adminUsername || email || `admin@${slug}.com`);
+        const effectiveEmail = email || adminUsername || `admin@${slug || name.toLowerCase().replace(/\s+/g, "_")}.com`;
+        formData.append("email", effectiveEmail);
+        formData.append("admin_username", adminUsername || effectiveEmail);
         formData.append("admin_password", adminPassword || `Tn.${Math.random().toString(36).substring(2, 8)}!2026`);
 
         if (logoXlFile) formData.append("logo_xl", logoXlFile);

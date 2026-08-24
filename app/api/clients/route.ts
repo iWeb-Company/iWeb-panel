@@ -51,11 +51,10 @@ export async function POST(req: NextRequest) {
       if (product === "Tranett") {
         const backendForm = new FormData();
         backendForm.append("name", name);
-        const cleanCuit = cuit.replace(/[^0-9]/g, "");
-        if (cleanCuit) {
-          backendForm.append("cuit", cleanCuit);
-        }
-        backendForm.append("email", email);
+        const cleanCuit = cuit.replace(/[^0-9]/g, "") || "20000000001";
+        backendForm.append("cuit", cleanCuit);
+        const effectiveEmail = email || adminUsername || `admin@${normalizedSlug}.com`;
+        backendForm.append("email", effectiveEmail);
         backendForm.append("status", status === "Activo" ? "true" : "false");
 
         const logoXl = formData.get("logo_xl");
@@ -70,13 +69,13 @@ export async function POST(req: NextRequest) {
         ]);
 
         if (logoXl instanceof Blob && logoXl.size > 0) {
-          backendForm.append("logo_xl", logoXl);
+          backendForm.append("logo_xl", logoXl, (logoXl as File).name || "logo_xl.png");
         } else {
           backendForm.append("logo_xl", new Blob([validPngBytes], { type: "image/png" }), "logo_xl.png");
         }
 
         if (logoS instanceof Blob && logoS.size > 0) {
-          backendForm.append("logo_s", logoS);
+          backendForm.append("logo_s", logoS, (logoS as File).name || "logo_s.png");
         } else {
           backendForm.append("logo_s", new Blob([validPngBytes], { type: "image/png" }), "logo_s.png");
         }
@@ -92,7 +91,13 @@ export async function POST(req: NextRequest) {
           let errorMsg = errorText;
           try {
             const parsed = JSON.parse(errorText);
-            errorMsg = parsed.detail || parsed.error || errorText;
+            if (Array.isArray(parsed.detail)) {
+              errorMsg = parsed.detail.map((d: any) => `${d.loc?.join(".") || "campo"}: ${d.msg}`).join(", ");
+            } else if (typeof parsed.detail === "string") {
+              errorMsg = parsed.detail;
+            } else if (parsed.error) {
+              errorMsg = typeof parsed.error === "string" ? parsed.error : JSON.stringify(parsed.error);
+            }
           } catch {}
           console.error("Tranett create_iweb_client failed:", errorMsg);
           return NextResponse.json(
