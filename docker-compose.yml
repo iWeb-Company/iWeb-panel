@@ -11,6 +11,8 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - ALLOWED_USERS=[{"user":"facundod@iwebtecnology.com","pass":"Iweb2026"},{"user":"valentind@iwebtecnology.com","pass":"Iweb2026"},{"user":"tomasb@iwebtecnology.com","pass":"Iweb.2026"}]
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - AI_MODEL=${AI_MODEL:-gemini-flash-latest}
       - JWT_SECRET=MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_PANEL_IWEB
     volumes:
       # Montar el socket de Docker para que el contenedor pueda monitorear la VPS
