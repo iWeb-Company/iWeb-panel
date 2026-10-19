@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { signUser } from "@/lib/planner-session";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -42,7 +43,7 @@ export async function POST(request: Request) {
     // Configurar cookie de sesión segura
     const maxAge = remember ? 60 * 60 * 24 * 7 : undefined; // 7 días si "recordar", o duración de sesión
 
-    cookieStore.set("iweb_session", "true", {
+    cookieStore.set("iweb_session", signUser(username), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
