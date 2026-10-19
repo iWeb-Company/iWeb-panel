@@ -21,5 +21,14 @@ export async function POST(req:NextRequest){
  const intervals=[...busy.filter(t=>t.date&&t.time).map(t=>({date:t.date!,time:t.time!,duration:t.duration,title:t.title}))];
  const conflicts:string[]=[];for(const t of proposals){const a=Number(t.start_time.slice(0,2))*60+Number(t.start_time.slice(3));if(intervals.some(b=>{if(b.date!==t.scheduled_date)return false;const s=Number(b.time.slice(0,2))*60+Number(b.time.slice(3));return a<s+b.duration&&s<a+t.duration;}))conflicts.push(t.title);intervals.push({date:t.scheduled_date,time:t.start_time,duration:t.duration,title:t.title});}
  return NextResponse.json({tasks:proposals,notes:typeof result.notes==="string"?result.notes.slice(0,1000):"",conflicts});
- }catch(err){console.error("Planner AI",err);return NextResponse.json({error:"No se pudo generar el plan. Revisá la configuración de Gemini."},{status:502})}
+ }catch(err){
+ console.error("Planner AI",err);
+ const message=err instanceof Error?err.message:"";
+ if(message.includes("GEMINI_API_KEY no está configurada"))return NextResponse.json({error:"Falta GEMINI_API_KEY en el servidor. Configurala en el entorno y reiniciá el servicio."},{status:503});
+ if(/HTTP 429/.test(message))return NextResponse.json({error:"Gemini superó la cuota o el límite de solicitudes (429). Revisá la cuota del proyecto y probá más tarde."},{status:429});
+ if(/HTTP 401|HTTP 403/.test(message))return NextResponse.json({error:"Gemini rechazó la API key o el proyecto no tiene permisos (401/403)."},{status:502});
+ if(/HTTP 404/.test(message))return NextResponse.json({error:"El modelo Gemini configurado no está disponible (404). Revisá AI_MODEL."},{status:502});
+ if(/HTTP 400/.test(message))return NextResponse.json({error:"Gemini rechazó la solicitud (400). Revisá el modelo y su compatibilidad con respuestas JSON."},{status:502});
+ return NextResponse.json({error:"No se pudo generar el plan. Consultá el log del servidor para ver el motivo."},{status:502});
+ }
 }
