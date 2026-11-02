@@ -7,6 +7,9 @@ const TRAVELNETT_API_BASE =
   "https://tranett.com/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Tranett/api";
 
 
+const FOONET_API_BASE = process.env.FOONET_API_URL ||
+  "https://foonet.iwebtecnology.com/MdpuF8KsXiRArNIHtI6pXO2XyLSJMTQ8_Foonet/api/v1";
+
 // GET /api/clients - Fetch all clients
 export async function GET() {
   try {
@@ -29,13 +32,40 @@ export async function POST(req: NextRequest) {
       const name = formData.get("name")?.toString() || "";
       const responsible = formData.get("responsible")?.toString() || "";
       const monthly = formData.get("monthly")?.toString() || "$0";
-      const product = (formData.get("product")?.toString() || "Tranett") as Client["product"];
+      const product = formData.get("product")?.toString() as Client["product"];
+      if (product !== "Tranett" && product !== "Foonett") return NextResponse.json({ error: "Producto SaaS inválido" }, { status: 400 });
       const status = (formData.get("status")?.toString() || "Activo") as Client["status"];
       const cuit = formData.get("cuit")?.toString() || "";
       const email = formData.get("email")?.toString() || "";
       const adminUsername = formData.get("admin_username")?.toString() || email;
       const adminPassword = formData.get("admin_password")?.toString() || "";
       const customSlug = formData.get("slug")?.toString() || "";
+
+      if (product === "Foonett") {
+        const slug = (customSlug || name).toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+        if (!slug || !email) return NextResponse.json({ error: "El subdominio y el correo administrador son obligatorios" }, { status: 400 });
+        const backendForm = new FormData();
+        backendForm.append("name", name);
+        backendForm.append("email_admin", email);
+        backendForm.append("slug", slug);
+        const logo = formData.get("logo_xl");
+        if (logo instanceof File && logo.size) backendForm.append("logo", logo);
+        const backendRes = await fetch(`${FOONET_API_BASE.replace(/\/$/, "")}/restaurants`, { method: "POST", body: backendForm });
+        if (!backendRes.ok) {
+          const message = await backendRes.text();
+          return NextResponse.json({ error: `Error al crear tenant en Foonet: ${message}` }, { status: backendRes.status });
+        }
+        const tenant = await backendRes.json();
+        const loginUrl = `https://${tenant.slug}.foonet.iwebtecnology.com/login`;
+        const newClient = { id: tenant.id, name, responsible, monthly, product, status, slug: tenant.slug, folder_id: tenant.folder_id, cuit, email, login_url: loginUrl, admin_username: email, logo_xl: tenant.logo_url };
+        try {
+          await run(`INSERT INTO clients (id,name,responsible,monthly,product,status,slug,folder_id,cuit,email,login_url,admin_username,logo_xl) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            [newClient.id,name,responsible,monthly,product,status,newClient.slug,newClient.folder_id ?? null,cuit,email,loginUrl,email,newClient.logo_xl ?? null]);
+        } catch {
+          return NextResponse.json({ error: `El tenant ${tenant.id} se creó en Foonet, pero no pudo guardarse en el panel. No repitas el alta sin reconciliarlo.` }, { status: 500 });
+        }
+        return NextResponse.json({ success: true, client: newClient });
+      }
 
       const normalizedSlug = (customSlug || name)
         .toLowerCase()
@@ -231,7 +261,7 @@ export async function POST(req: NextRequest) {
       .replace(/[\s-]+/g, "_")
       .replace(/[^a-z0-9_]/g, "") || "empresa";
 
-    const loginUrl = client.login_url || `https://${normalizedSlug}.tranett.com/login`;
+    const loginUrl = client.product === "Tranett" ? (client.login_url || `https://${normalizedSlug}.tranett.com/login`) : (client.login_url && !client.login_url.includes(".tranett.com") ? client.login_url : null);
 
     await run(
       `INSERT INTO clients (
@@ -245,7 +275,7 @@ export async function POST(req: NextRequest) {
         client.monthly,
         client.product,
         client.status,
-        normalizedSlug,
+        client.product === "Tranett" ? normalizedSlug : client.product === "Foonett" ? (client.slug || null) : null,
         client.folder_id || null,
         client.cuit || null,
         client.email || null,
@@ -256,7 +286,7 @@ export async function POST(req: NextRequest) {
       ]
     );
 
-    return NextResponse.json({ success: true, client: { ...client, slug: normalizedSlug, login_url: loginUrl } });
+    return NextResponse.json({ success: true, client: { ...client, slug: client.product === "Tranett" ? normalizedSlug : client.product === "Foonett" ? (client.slug || null) : null, login_url: loginUrl } });
   } catch (error: any) {
     console.error("API POST client error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -272,7 +302,7 @@ export async function PUT(req: NextRequest) {
       .trim()
       .replace(/[\s-]+/g, "_")
       .replace(/[^a-z0-9_]/g, "") || "empresa";
-    const loginUrl = client.login_url || `https://${normalizedSlug}.tranett.com/login`;
+    const loginUrl = client.product === "Tranett" ? (client.login_url || `https://${normalizedSlug}.tranett.com/login`) : (client.login_url && !client.login_url.includes(".tranett.com") ? client.login_url : null);
 
     await run(
       `UPDATE clients SET 
@@ -285,7 +315,7 @@ export async function PUT(req: NextRequest) {
         client.monthly,
         client.product,
         client.status,
-        normalizedSlug,
+        client.product === "Tranett" ? normalizedSlug : client.product === "Foonett" ? (client.slug || null) : null,
         client.cuit || null,
         client.email || null,
         loginUrl,
@@ -293,7 +323,7 @@ export async function PUT(req: NextRequest) {
         client.id,
       ]
     );
-    return NextResponse.json({ success: true, client });
+    return NextResponse.json({ success: true, client: { ...client, slug: client.product === "Tranett" ? normalizedSlug : client.product === "Foonett" ? (client.slug || null) : null, login_url: loginUrl } });
   } catch (error: any) {
     console.error("API PUT client error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -336,4 +366,3 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-
