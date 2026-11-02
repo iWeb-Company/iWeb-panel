@@ -29,6 +29,7 @@ const navItems = [
     href: "/dashboard/proyectos",
     icon: ProjectsIcon,
   },
+  { translationKey: "pipelines", href: "/dashboard/pipelines", icon: ProjectsIcon },
   {
     translationKey: "planificacion",
     href: "/dashboard/planificacion",
@@ -129,7 +130,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
                   <item.icon className="h-5 w-5" />
                 </span>
 
-                <span className="font-medium">{item.translationKey === "planificacion" ? "Planificación" : t(item.translationKey)}</span>
+                <span className="font-medium">{item.translationKey === "pipelines" ? "Pipelines" : item.translationKey === "planificacion" ? "Planificación" : t(item.translationKey)}</span>
               </Link>
             );
           })}

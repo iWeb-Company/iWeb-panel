@@ -112,7 +112,7 @@ export function ClientFormModal({
     const isEdit = !!client;
 
     try {
-      if (product === "Tranett" && !isEdit) {
+      if ((product === "Tranett" || product === "Foonett") && !isEdit) {
         // Multipart SaaS Provisioning
         const formData = new FormData();
         formData.append("name", name);
@@ -120,9 +120,9 @@ export function ClientFormModal({
         formData.append("monthly", monthly);
         formData.append("product", product);
         formData.append("status", status);
-        formData.append("slug", slug || name.toLowerCase().replace(/\s+/g, "_"));
+        formData.append("slug", product === "Foonett" ? name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : (slug || name.toLowerCase().replace(/\s+/g, "_")));
         formData.append("cuit", cuit);
-        const effectiveEmail = email || adminUsername || `admin@${slug || name.toLowerCase().replace(/\s+/g, "_")}.com`;
+        const effectiveEmail = product === "Foonett" ? email : (email || adminUsername || `admin@${slug || name.toLowerCase().replace(/\s+/g, "_")}.com`);
         formData.append("email", effectiveEmail);
         formData.append("admin_username", adminUsername || effectiveEmail);
         formData.append("admin_password", adminPassword || `Tn.${Math.random().toString(36).substring(2, 8)}!2026`);
@@ -151,11 +151,11 @@ export function ClientFormModal({
           monthly,
           product,
           status,
-          slug: slug || name.toLowerCase().replace(/\s+/g, "_"),
+          slug: product === "Tranett" ? (slug || name.toLowerCase().replace(/\s+/g, "_")) : product === "Foonett" ? client?.slug : undefined,
           cuit,
           email,
           admin_username: adminUsername,
-          login_url: `https://${slug || name.toLowerCase().replace(/\s+/g, "_")}.tranett.com/login`,
+          login_url: product === "Tranett" ? `https://${slug || name.toLowerCase().replace(/\s+/g, "_")}.tranett.com/login` : (client?.login_url && !client.login_url.includes(".tranett.com") ? client.login_url : undefined),
         };
 
         const res = await fetch("/api/clients", {
@@ -210,6 +210,7 @@ export function ClientFormModal({
             </label>
             <select
               value={product}
+              disabled={!!client}
               onChange={(event) =>
                 setProduct(event.target.value as Client["product"])
               }
@@ -292,6 +293,7 @@ export function ClientFormModal({
           </div>
         </div>
 
+        {product === "Foonett" && !client && <div className="space-y-2 rounded-xl border border-cyan-500/20 p-4"><label className="block text-sm text-zinc-300">Correo del administrador *<input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="mt-1 h-11 w-full rounded-xl border border-white/10 bg-black/40 px-3 text-white" /></label><p className="text-xs text-zinc-400">Foonet crea la contraseña inicial a partir del nombre, en minúsculas y sin espacios. Cambiala después del primer acceso.</p></div>}
         {/* Sección de Aprovisionamiento SaaS (Tranett) */}
         {product === "Tranett" && (
           <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/[0.03] p-4 space-y-4">

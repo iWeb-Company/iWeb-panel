@@ -42,8 +42,8 @@ export function ClientsTable({
             </tr>
           ) : (
             clients.map((client) => {
-              const clientSlug = client.slug || (client.product === "Tranett" ? client.name.toLowerCase().replace(/[\s-]+/g, "_").replace(/[^a-z0-9_]/g, "") : null);
-              const loginUrl = client.login_url || (clientSlug ? `https://${clientSlug}.tranett.com/login` : null);
+              const clientSlug = client.product === "Tranett" ? client.slug : null;
+              const loginUrl = client.product === "Tranett" ? (client.login_url || (clientSlug ? `https://${clientSlug}.tranett.com/login` : null)) : (client.login_url && !client.login_url.includes(".tranett.com") ? client.login_url : null);
 
               return (
                 <tr
@@ -67,7 +67,7 @@ export function ClientsTable({
                           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cyan-400/10 border border-cyan-400/20 text-cyan-300 hover:bg-cyan-400/20 text-xs font-mono transition"
                           title="Abrir URL del tenant"
                         >
-                          <span>{clientSlug}.tranett.com</span>
+                          <span>{loginUrl.replace(/^https?:\/\//, "")}</span>
                           <span className="text-[10px]">↗</span>
                         </a>
                       </div>
