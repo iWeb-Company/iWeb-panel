@@ -74,11 +74,11 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
       )}
 
       <aside
-        className={`fixed left-0 top-0 z-50 h-screen w-[280px] border-r border-white/10 bg-[#050808] px-5 py-6 transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed left-0 top-0 z-50 flex h-dvh w-[280px] flex-col border-r border-white/10 bg-[#050808] px-5 py-6 transition-transform duration-300 lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="mb-8 rounded-2xl border border-cyan-400/10 bg-cyan-400/[0.03] p-5">
+        <div className="mb-8 shrink-0 rounded-2xl border border-cyan-400/10 bg-cyan-400/[0.03] p-5">
           <div className="flex items-center gap-4">
             <div className="relative h-10 w-20">
               <Image
@@ -101,7 +101,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           </div>
         </div>
 
-        <nav className="space-y-2">
+        <nav className="min-h-0 flex-1 space-y-2 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
 
@@ -136,7 +136,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           })}
         </nav>
 
-        <div className="absolute bottom-6 left-5 right-5">
+        <div className="shrink-0 pt-4">
           <button 
             onClick={handleLogout}
             className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm text-zinc-500 transition hover:bg-white/[0.06] hover:text-white cursor-pointer"
