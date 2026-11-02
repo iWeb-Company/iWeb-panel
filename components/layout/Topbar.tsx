@@ -3,12 +3,11 @@
 import { useState, useEffect } from "react";
 import {
   BellIcon,
-  SearchIcon,
-  SlidersIcon,
   UserCircleIcon,
 } from "@/components/icons/SidebarIcons";
 import { NotificationsDropdown } from "./NotificationsDropdown";
 import { useLanguage } from "@/lib/LanguageContext";
+import { usePathname } from "next/navigation";
 
 const MenuIcon = ({ className }: { className?: string }) => (
   <svg
@@ -28,13 +27,15 @@ const MenuIcon = ({ className }: { className?: string }) => (
 );
 
 export function Topbar({ onToggleSidebar }: { onToggleSidebar: () => void }) {
+  const pathname = usePathname();
+  const section = ({ analiticas: "Analíticas", clientes: "Clientes", proyectos: "Proyectos", pipelines: "Pipelines", planificacion: "Planificación", rendimiento: "Rendimiento", marketing: "Agente Marketing" } as Record<string, string>)[pathname.split("/")[2]] || "Panel de control";
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const { language, toggleLanguage, t } = useLanguage();
+  const { language, toggleLanguage } = useLanguage();
   const [profile, setProfile] = useState({ name: "Valentín", role: "UX/UI Designer" });
   
   const [notifications, setNotifications] = useState<any[]>([]);
-  const [hasUnread, setHasUnread] = useState(true);
+  const hasUnread = notifications.some((notification) => !notification.isRead);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("iweb_panel_username") || "";
@@ -58,8 +59,6 @@ export function Topbar({ onToggleSidebar }: { onToggleSidebar: () => void }) {
         .then((data) => {
           if (Array.isArray(data)) {
             setNotifications(data);
-            const hasUnreadNotifications = data.some((n) => !n.isRead);
-            setHasUnread(hasUnreadNotifications);
           }
         })
         .catch((err) => console.error("Error fetching notifications in Topbar:", err));
@@ -69,9 +68,6 @@ export function Topbar({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   const handleToggleNotifications = () => {
     setNotificationsOpen((prev) => {
       const next = !prev;
-      if (next) {
-        setHasUnread(false);
-      }
       return next;
     });
   };
@@ -91,21 +87,19 @@ export function Topbar({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-[82px] items-center justify-between border-b border-white/10 bg-[#030606] px-4 sm:px-8">
+    <header className="sticky top-0 z-30 flex h-[72px] items-center justify-between border-b border-white/10 bg-[#030606]/95 px-4 backdrop-blur sm:px-8">
       <div className="flex items-center gap-4">
         <button
           onClick={onToggleSidebar}
+          aria-label="Abrir menú de navegación"
           className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:bg-white/[0.07] hover:text-white lg:hidden cursor-pointer"
         >
           <MenuIcon className="h-5 w-5" />
         </button>
 
-        <div className="relative max-sm:hidden">
-          <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-600" />
-          <input
-            placeholder={t("buscarDatos")}
-            className="h-11 w-full max-w-[390px] rounded-2xl border border-white/10 bg-white/[0.04] pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-zinc-600 focus:border-cyan-400/30 focus:bg-white/[0.06]"
-          />
+        <div className="min-w-0">
+          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-500">iWeb / Panel</p>
+          <p className="truncate text-sm font-semibold text-zinc-100">{section}</p>
         </div>
       </div>
 
@@ -114,6 +108,8 @@ export function Topbar({ onToggleSidebar }: { onToggleSidebar: () => void }) {
           <button
             type="button"
             onClick={handleToggleNotifications}
+            aria-label="Notificaciones"
+            aria-expanded={notificationsOpen}
             className="relative flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:bg-white/[0.07] hover:text-white cursor-pointer"
           >
             <BellIcon className="h-5 w-5" />
@@ -130,12 +126,9 @@ export function Topbar({ onToggleSidebar }: { onToggleSidebar: () => void }) {
           />
         </div>
 
-        <button className="hidden sm:flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:bg-white/[0.07] hover:text-white cursor-pointer">
-          <SlidersIcon className="h-5 w-5" />
-        </button>
-
         <button
           onClick={toggleLanguage}
+          aria-label="Cambiar idioma"
           className="rounded-2xl border border-white/10 bg-white/[0.04] px-3 sm:px-4 py-3 text-sm font-semibold text-zinc-200 hover:bg-white/[0.08] hover:text-white transition cursor-pointer"
         >
           {language}
@@ -144,6 +137,8 @@ export function Topbar({ onToggleSidebar }: { onToggleSidebar: () => void }) {
         <div className="relative flex items-center gap-3 pl-1 sm:pl-2">
           <button
             onClick={() => setProfileOpen((prev) => !prev)}
+            aria-label="Ver perfil"
+            aria-expanded={profileOpen}
             className="flex items-center gap-3 focus:outline-none cursor-pointer"
             title={profile.name}
           >
@@ -156,7 +151,7 @@ export function Topbar({ onToggleSidebar }: { onToggleSidebar: () => void }) {
           </div>
 
           {profileOpen && (
-            <div className="absolute right-0 top-11 z-50 rounded-2xl border border-white/10 bg-[#0B0F0F] p-3 shadow-[0_12px_40px_rgba(0,0,0,0.7)] sm:hidden min-w-[170px] text-right">
+            <div className="absolute right-0 top-11 z-50 rounded-2xl border border-white/10 bg-[#0B0F0F] p-3 shadow-[0_12px_40px_rgba(0,0,0,0.7)] min-w-[170px] text-right">
               <p className="text-sm font-semibold text-white">{profile.name}</p>
               <p className="text-xs text-zinc-500 mt-0.5">{profile.role}</p>
             </div>

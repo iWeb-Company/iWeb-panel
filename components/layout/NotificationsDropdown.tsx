@@ -32,7 +32,7 @@ export function NotificationsDropdown({
 
   return (
     <div 
-      className="fixed right-4 top-[86px] sm:absolute sm:right-0 sm:top-14 z-[999] w-[calc(100vw-32px)] sm:w-[420px] max-w-[420px] rounded-[22px] border border-white/10 p-4 shadow-[0_24px_90px_rgba(0,0,0,0.85)]"
+      className="fixed right-4 top-[76px] sm:absolute sm:right-0 sm:top-14 z-[999] w-[calc(100vw-32px)] sm:w-[420px] max-w-[420px] rounded-[22px] border border-white/10 p-4 shadow-[0_24px_90px_rgba(0,0,0,0.85)]"
       style={{ backgroundColor: "#0B0F0F", opacity: 1 }}
     >
       <div className="mb-4 flex items-start justify-between">
@@ -53,7 +53,7 @@ export function NotificationsDropdown({
         </button>
       </div>
 
-      <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1">
+      <div className="space-y-3 max-h-[min(360px,60dvh)] overflow-y-auto pr-1">
         {notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-center bg-white/[0.01] border border-white/5 rounded-2xl">
             <span className="text-2xl">🎉</span>

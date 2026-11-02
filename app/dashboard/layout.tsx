@@ -22,11 +22,11 @@ export default function DashboardLayout({
         <section className="relative z-10 lg:pl-[280px] transition-all duration-300">
           <Topbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
-          <div className="mx-auto max-w-[1520px] px-4 sm:px-8 py-8">
+          <div className="mx-auto max-w-[1520px] px-4 py-6 sm:px-8 sm:py-8">
             {children}
           </div>
         </section>
       </main>
     </AuthGuard>
   );
-}
+}

@@ -25,11 +25,11 @@ export function PageHeader({
             {eyebrow}
           </p>
 
-          <h1 className="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+          <h1 className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight text-white">
             {title}
           </h1>
 
-          <p className="mt-2 text-sm text-zinc-500">{description}</p>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-400">{description}</p>
         </div>
       </div>
 

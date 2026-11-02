@@ -17,7 +17,7 @@ export function StatCard({
 
       <div className="relative z-10">
         <div className="flex items-start justify-between gap-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-400">
             {title}
           </p>
 
@@ -26,12 +26,12 @@ export function StatCard({
           </div>
         </div>
 
-        <h3 className="mt-6 text-3xl font-bold tracking-tight text-white">
+        <h3 className="mt-4 break-words text-2xl sm:text-3xl font-bold tracking-tight text-white">
           {value}
         </h3>
 
         {description && (
-          <p className="mt-3 text-sm text-cyan-300/80">{description}</p>
+          <p className="mt-2 text-sm text-zinc-400">{description}</p>
         )}
       </div>
     </Card>
