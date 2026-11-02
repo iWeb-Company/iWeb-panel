@@ -21,17 +21,17 @@ export function StatCard({
             {title}
           </p>
 
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-cyan-400/15 bg-cyan-400/[0.06] text-cyan-300">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-cyan-400/15 bg-cyan-400/[0.06] text-cyan-300">
             {icon}
           </div>
         </div>
 
-        <h3 className="mt-4 break-words text-2xl sm:text-3xl font-bold tracking-tight text-white">
+        <h3 className="mt-3 break-words text-2xl font-bold tracking-tight text-white">
           {value}
         </h3>
 
         {description && (
-          <p className="mt-2 text-sm text-zinc-400">{description}</p>
+          <p className="mt-1.5 text-sm text-zinc-400">{description}</p>
         )}
       </div>
     </Card>

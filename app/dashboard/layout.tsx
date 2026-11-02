@@ -19,10 +19,10 @@ export default function DashboardLayout({
 
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-        <section className="relative z-10 lg:pl-[280px] transition-all duration-300">
+        <section className="relative z-10 lg:pl-[240px] transition-all duration-300">
           <Topbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
-          <div className="mx-auto max-w-[1520px] px-4 py-6 sm:px-8 sm:py-8">
+          <div className="mx-auto max-w-[1600px] px-4 py-5 sm:px-6 sm:py-6 xl:px-8">
             {children}
           </div>
         </section>

@@ -239,7 +239,7 @@ export default function AnaliticasPage() {
   }, [parsedProjects]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
         eyebrow={t("panelInterno")}
         title={t("analiticas")}
@@ -247,16 +247,16 @@ export default function AnaliticasPage() {
         icon={<AnalyticsIcon className="h-5 w-5" />}
       />
 
-      <section className="grid grid-cols-1 lg:grid-cols-[1.65fr_1fr] items-stretch gap-5">
-        <Card className="flex min-h-[360px] flex-col justify-between overflow-hidden bg-[#1D2A2B]/80 p-8">
+      <section className="grid grid-cols-1 lg:grid-cols-[1.65fr_1fr] items-stretch gap-4">
+        <Card className="flex min-h-[260px] flex-col justify-between gap-8 overflow-hidden bg-[#1D2A2B]/80 p-5 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">
                 {t("ingresosEstimados")}
               </p>
 
-              <div className="mt-5 flex items-end gap-4">
-                <h2 className="text-6xl font-bold tracking-tight text-white">
+              <div className="mt-3 flex flex-wrap items-end gap-3">
+                <h2 className="break-words text-4xl font-bold tracking-tight text-white sm:text-5xl">
                   {revenue}
                 </h2>
 
@@ -307,7 +307,7 @@ export default function AnaliticasPage() {
           </div>
         </Card>
 
-        <div className="grid gap-5">
+        <div className="grid gap-4">
           <StatCard
             title={t("previsionCrecimiento")}
             value={growthStats.value}
@@ -324,8 +324,8 @@ export default function AnaliticasPage() {
         </div>
       </section>
 
-      <Card className="p-8">
-        <div className="mb-8 flex items-center justify-between">
+      <Card className="p-5 sm:p-6">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold text-white">
               {t("crecimientoIngresos")}
@@ -361,12 +361,12 @@ export default function AnaliticasPage() {
           </div>
         </div>
 
-        <div className="flex h-[280px] items-end gap-3 border-b border-l border-white/10 p-4">
+        <div className="flex h-[220px] items-end gap-3 border-b border-l border-white/10 p-4">
           {chartData.map((height, index) => (
             <div
               key={index}
               className="flex-1 rounded-t bg-cyan-400/50 transition-all duration-500"
-              style={{ height: `${height}px` }}
+              style={{ height: `${(height / 250) * 100}%` }}
             />
           ))}
         </div>

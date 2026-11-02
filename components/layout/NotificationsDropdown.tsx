@@ -32,7 +32,7 @@ export function NotificationsDropdown({
 
   return (
     <div 
-      className="fixed right-4 top-[76px] sm:absolute sm:right-0 sm:top-14 z-[999] w-[calc(100vw-32px)] sm:w-[420px] max-w-[420px] rounded-[22px] border border-white/10 p-4 shadow-[0_24px_90px_rgba(0,0,0,0.85)]"
+      className="fixed right-4 top-[68px] sm:absolute sm:right-0 sm:top-12 z-[999] w-[calc(100vw-32px)] sm:w-[420px] max-w-[420px] rounded-[22px] border border-white/10 p-4 shadow-[0_24px_90px_rgba(0,0,0,0.85)]"
       style={{ backgroundColor: "#0B0F0F", opacity: 1 }}
     >
       <div className="mb-4 flex items-start justify-between">

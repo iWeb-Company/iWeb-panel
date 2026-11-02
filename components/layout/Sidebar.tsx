@@ -74,11 +74,11 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
       )}
 
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-dvh w-[280px] flex-col border-r border-white/10 bg-[#050808] px-5 py-6 transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed left-0 top-0 z-50 flex h-dvh w-[240px] flex-col border-r border-white/10 bg-[#050808] px-4 py-4 transition-transform duration-300 lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="mb-8 shrink-0 rounded-2xl border border-cyan-400/10 bg-cyan-400/[0.03] p-5">
+        <div className="mb-5 shrink-0 rounded-2xl border border-cyan-400/10 bg-cyan-400/[0.03] p-4">
           <div className="flex items-center gap-4">
             <div className="relative h-10 w-20">
               <Image
@@ -101,7 +101,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           </div>
         </div>
 
-        <nav className="min-h-0 flex-1 space-y-2 overflow-y-auto">
+        <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
 
@@ -110,7 +110,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
                 key={item.href}
                 href={item.href}
                 onClick={onClose}
-                className={`group relative flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm transition ${
+                className={`group relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition ${
                   isActive
                     ? "border border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-200 shadow-[0_0_24px_rgba(0,221,235,0.08)]"
                     : "border border-transparent text-zinc-500 hover:border-white/10 hover:bg-white/[0.04] hover:text-white"
@@ -121,7 +121,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
                 )}
 
                 <span
-                  className={`flex h-9 w-9 items-center justify-center rounded-xl ${
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
                     isActive
                       ? "bg-cyan-400/15 text-cyan-200"
                       : "bg-white/[0.04] text-zinc-500 group-hover:text-white"
@@ -136,7 +136,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           })}
         </nav>
 
-        <div className="shrink-0 pt-4">
+        <div className="shrink-0 pt-3">
           <button 
             onClick={handleLogout}
             className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm text-zinc-500 transition hover:bg-white/[0.06] hover:text-white cursor-pointer"
