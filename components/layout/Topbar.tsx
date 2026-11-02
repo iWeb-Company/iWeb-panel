@@ -87,12 +87,12 @@ export function Topbar({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-[72px] items-center justify-between border-b border-white/10 bg-[#030606]/95 px-4 backdrop-blur sm:px-8">
+    <header className="sticky top-0 z-30 flex h-[64px] items-center justify-between border-b border-white/10 bg-[#030606]/95 px-4 backdrop-blur sm:px-8">
       <div className="flex items-center gap-4">
         <button
           onClick={onToggleSidebar}
           aria-label="Abrir menú de navegación"
-          className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:bg-white/[0.07] hover:text-white lg:hidden cursor-pointer"
+          className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:bg-white/[0.07] hover:text-white lg:hidden cursor-pointer"
         >
           <MenuIcon className="h-5 w-5" />
         </button>
@@ -110,7 +110,7 @@ export function Topbar({ onToggleSidebar }: { onToggleSidebar: () => void }) {
             onClick={handleToggleNotifications}
             aria-label="Notificaciones"
             aria-expanded={notificationsOpen}
-            className="relative flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:bg-white/[0.07] hover:text-white cursor-pointer"
+            className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:bg-white/[0.07] hover:text-white cursor-pointer"
           >
             <BellIcon className="h-5 w-5" />
             {hasUnread && notifications.length > 0 && (
@@ -129,7 +129,7 @@ export function Topbar({ onToggleSidebar }: { onToggleSidebar: () => void }) {
         <button
           onClick={toggleLanguage}
           aria-label="Cambiar idioma"
-          className="rounded-2xl border border-white/10 bg-white/[0.04] px-3 sm:px-4 py-3 text-sm font-semibold text-zinc-200 hover:bg-white/[0.08] hover:text-white transition cursor-pointer"
+          className="rounded-2xl border border-white/10 bg-white/[0.04] px-3 sm:px-4 py-2.5 text-sm font-semibold text-zinc-200 hover:bg-white/[0.08] hover:text-white transition cursor-pointer"
         >
           {language}
         </button>
