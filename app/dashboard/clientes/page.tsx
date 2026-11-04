@@ -28,6 +28,7 @@ export default function ClientesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
+  const [deleteError, setDeleteError] = useState("");
   const [provisioningResult, setProvisioningResult] = useState<ProvisioningResult | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("Todos");
@@ -111,16 +112,18 @@ export default function ClientesPage() {
     setFormOpen(true);
   }
 
-  function handleDeleteClient() {
+  async function handleDeleteClient() {
     if (!clientToDelete) return;
-
-    fetch(`/api/clients?id=${clientToDelete.id}`, { method: "DELETE" })
-      .then((res) => res.json())
-      .then(() => {
-        setClients((current) => current.filter((client) => client.id !== clientToDelete.id));
-        setClientToDelete(null);
-      })
-      .catch((err) => console.error("Error deleting client:", err));
+    setDeleteError("");
+    try {
+      const res = await fetch(`/api/clients?id=${encodeURIComponent(clientToDelete.id)}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "No se pudo eliminar el cliente");
+      setClients((current) => current.filter((client) => client.id !== clientToDelete.id));
+      setClientToDelete(null);
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : "No se pudo eliminar el cliente");
+    }
   }
 
   function handleExportClients() {
@@ -256,10 +259,10 @@ export default function ClientesPage() {
       <ConfirmDialog
         open={!!clientToDelete}
         title={t("eliminarCliente")}
-        description={t("eliminarClienteDesc", { name: clientToDelete?.name ?? "" })}
+        description={deleteError || t("eliminarClienteDesc", { name: clientToDelete?.name ?? "" })}
         confirmLabel={t("eliminarCliente")}
         variant="danger"
-        onClose={() => setClientToDelete(null)}
+        onClose={() => { setClientToDelete(null); setDeleteError(""); }}
         onConfirm={handleDeleteClient}
       />
     </div>
