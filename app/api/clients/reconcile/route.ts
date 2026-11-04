@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   if (!await currentUser()) return error("No autorizado", 401);
   const id = req.nextUrl.searchParams.get("id");
   if (!id) return error("Falta el ID del cliente", 400);
-  try { const { client, tenant } = await findCandidate(id); return NextResponse.json({ client: { id: client.id, name: client.name, cuit: client.cuit, slug: client.slug }, tenant: { id: tenant.id, name: tenant.name, cuit: tenant.cuit, slug: tenant.slug } }); }
+  try { const { client, tenant } = await findCandidate(id); return NextResponse.json({ client: { id: client.id, name: client.name, cuit: client.cuit, slug: client.slug }, tenant: { id: tenant.id, name: tenant.name, cuit: tenant.cuit, slug: tenant.slug } }, { headers: { "Cache-Control": "no-store" } }); }
   catch (err) { return error(err instanceof Error ? err.message : "No se pudo buscar la coincidencia", 409); }
 }
 export async function POST(req: NextRequest) {
