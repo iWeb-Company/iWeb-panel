@@ -295,39 +295,40 @@ export async function PUT(req: NextRequest) {
   }
 }
 
-// DELETE /api/clients - Delete a client
+// DELETE /api/clients - Delete a client only after the SaaS confirms deletion.
 export async function DELETE(req: NextRequest) {
   try {
     const id = req.nextUrl.searchParams.get("id");
-    if (!id) {
-      return NextResponse.json({ error: "Missing client ID" }, { status: 400 });
-    }
+    if (!id) return NextResponse.json({ error: "Falta el ID del cliente" }, { status: 400 });
 
-    // Try cascading deletion on SaaS if it's a Tranett client
-    try {
-      const existing = await get<Client>("SELECT * FROM clients WHERE id = ?", [id]);
-      if (existing && existing.product === "Tranett") {
-        // 1. Fetch users and delete them first
-        const usersRes = await fetch(`${TRAVELNETT_API_BASE}/auth/users/${id}`);
-        if (usersRes.ok) {
-          const users = await usersRes.json();
-          if (Array.isArray(users)) {
-            for (const u of users) {
-              await fetch(`${TRAVELNETT_API_BASE}/auth/users/${id}/${u.id}`, { method: "DELETE" });
-            }
-          }
-        }
-        // 2. Delete tenant record and folder
-        await fetch(`${TRAVELNETT_API_BASE}/iweb-clients/delete_iweb_client/${id}`, { method: "DELETE" });
+    const existing = await get<Client>("SELECT * FROM clients WHERE id = ?", [id]);
+    if (!existing) return NextResponse.json({ error: "Cliente no encontrado" }, { status: 404 });
+
+    if (existing.product === "Tranett") {
+      let response: Response;
+      try {
+        response = await fetch(`${TRAVELNETT_API_BASE.replace(/\/$/, "")}/iweb-clients/delete_iweb_client/${encodeURIComponent(id)}`, { method: "DELETE" });
+      } catch {
+        return NextResponse.json({ error: "No se pudo conectar con Tranett. El cliente sigue en el panel; verificá el estado del tenant antes de reintentar." }, { status: 502 });
       }
-    } catch (saasErr) {
-      console.warn("Could not delete from Tranett SaaS backend:", saasErr);
+      if (!response.ok) {
+        let detail = "Tranett no confirmó la eliminación. El cliente sigue en el panel.";
+        try {
+          const body = await response.json();
+          if (typeof body.detail === "string") detail = body.detail;
+        } catch { /* Use the generic message for non-JSON errors. */ }
+        return NextResponse.json({ error: detail }, { status: response.status });
+      }
     }
 
-    await run("DELETE FROM clients WHERE id = ?", [id]);
+    try {
+      await run("DELETE FROM clients WHERE id = ?", [id]);
+    } catch {
+      return NextResponse.json({ error: existing.product === "Tranett" ? "Tranett confirmó la eliminación, pero el cliente no pudo borrarse del panel. Actualizá el registro manualmente." : "No se pudo borrar el cliente del panel." }, { status: 500 });
+    }
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error("API DELETE client error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "No se pudo eliminar el cliente" }, { status: 500 });
   }
 }
