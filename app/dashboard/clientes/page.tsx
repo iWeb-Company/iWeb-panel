@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Modal } from "@/components/ui/Modal";
 
 import { ClientsTable } from "@/components/clients/ClientsTable";
 import { ClientFormModal } from "@/components/clients/ClientFormModal";
@@ -29,6 +30,14 @@ export default function ClientesPage() {
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
   const [deleteError, setDeleteError] = useState("");
+  const [deletePhase, setDeletePhase] = useState<"preview" | "backup">("preview");
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deletePreview, setDeletePreview] = useState<{ tenant: { id: string; name: string; slug: string }; tables: Record<string, number>; files: number; snapshot: string } | null>(null);
+  const [backupDownloaded, setBackupDownloaded] = useState(false);
+  const [reconcileClient, setReconcileClient] = useState<Client | null>(null);
+  const [reconcileCandidate, setReconcileCandidate] = useState<{ id: string; name: string; slug: string; cuit: string | number } | null>(null);
+  const [reconcileError, setReconcileError] = useState("");
+  const [reconcileBusy, setReconcileBusy] = useState(false);
   const [provisioningResult, setProvisioningResult] = useState<ProvisioningResult | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("Todos");
@@ -110,6 +119,73 @@ export default function ClientesPage() {
   function handleEditClient(client: Client) {
     setEditingClient(client);
     setFormOpen(true);
+  }
+
+  async function handleReconcile(client: Client) {
+    setReconcileClient(client); setReconcileCandidate(null); setReconcileError(""); setReconcileBusy(true);
+    try {
+      const res = await fetch(`/api/clients/reconcile?id=${encodeURIComponent(client.id)}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "No se encontró una coincidencia");
+      setReconcileCandidate(data.tenant);
+    } catch (err) { setReconcileError(err instanceof Error ? err.message : "No se pudo buscar el tenant"); }
+    finally { setReconcileBusy(false); }
+  }
+  async function confirmReconcile() {
+    if (!reconcileClient || !reconcileCandidate) return;
+    setReconcileBusy(true); setReconcileError("");
+    try {
+      const res = await fetch("/api/clients/reconcile", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: reconcileClient.id, tenant_id: reconcileCandidate.id }) });
+      const data = await res.json(); if (!res.ok) throw new Error(data.error || "No se pudo vincular");
+      const updated = await fetch("/api/clients"); const rows = await updated.json(); if (!updated.ok || !Array.isArray(rows)) throw new Error("El vínculo se actualizó, pero no se pudo refrescar la lista");
+      setClients(rows); setReconcileClient(null);
+    } catch (err) { setReconcileError(err instanceof Error ? err.message : "No se pudo vincular"); }
+    finally { setReconcileBusy(false); }
+  }
+
+  async function beginDelete(client: Client) {
+    setClientToDelete(client); setDeleteError(""); setDeletePhase("preview"); setDeletePreview(null); setBackupDownloaded(false);
+    if (client.product !== "Tranett") return;
+    setDeleteBusy(true);
+    try {
+      const res = await fetch("/api/clients/maintenance", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: client.id, action: "preview" }) });
+      const data = await res.json(); if (!res.ok) throw new Error(data.error || "No se pudo revisar el tenant");
+      setDeletePreview(data);
+    } catch (err) { setDeleteError(err instanceof Error ? err.message : "No se pudo revisar el tenant"); }
+    finally { setDeleteBusy(false); }
+  }
+  async function downloadTenantBackup() {
+    if (!clientToDelete || !deletePreview) return;
+    setDeleteBusy(true); setDeleteError("");
+    try {
+      const res = await fetch("/api/clients/maintenance", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: clientToDelete.id, action: "backup", snapshot: deletePreview.snapshot }) });
+      if (!res.ok) { const data = await res.json(); throw new Error(data.error || "No se pudo generar el respaldo"); }
+      const blob = await res.blob(); const url = URL.createObjectURL(blob); const link = document.createElement("a");
+      link.href = url; link.download = `tenant-${clientToDelete.id}.zip`; document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); setBackupDownloaded(true);
+    } catch (err) { setDeleteError(err instanceof Error ? err.message : "No se pudo generar el respaldo"); }
+    finally { setDeleteBusy(false); }
+  }
+  async function unlinkMissingTenant() {
+    if (!clientToDelete || !window.confirm("¿Eliminar solo este registro del panel? Si existe otro tenant en Tranett con un ID distinto, permanecerá intacto.")) return;
+    setDeleteBusy(true); setDeleteError("");
+    try {
+      const res = await fetch("/api/clients/unlink", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: clientToDelete.id, confirm: true }) });
+      const data = await res.json(); if (!res.ok) throw new Error(data.error || "No se pudo eliminar el registro");
+      setClients(current => current.filter(client => client.id !== clientToDelete.id)); setClientToDelete(null);
+    } catch (err) { setDeleteError(err instanceof Error ? err.message : "No se pudo eliminar el registro"); }
+    finally { setDeleteBusy(false); }
+  }
+
+  async function confirmTenantDelete() {
+    if (!clientToDelete || !deletePreview) return;
+    setDeleteBusy(true); setDeleteError("");
+    try {
+      const res = await fetch("/api/clients/maintenance", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: clientToDelete.id, action: "delete", snapshot: deletePreview.snapshot, confirm: true }) });
+      const data = await res.json(); if (!res.ok) throw new Error(data.error || "No se pudo eliminar el tenant");
+      setClients(current => current.filter(client => client.id !== clientToDelete.id)); setClientToDelete(null);
+      if (data.warning) window.alert(data.warning);
+    } catch (err) { setDeleteError(err instanceof Error ? err.message : "No se pudo eliminar el tenant"); }
+    finally { setDeleteBusy(false); }
   }
 
   async function handleDeleteClient() {
@@ -230,7 +306,8 @@ export default function ClientesPage() {
         <ClientsTable
           clients={filteredClients}
           onEdit={handleEditClient}
-          onDelete={setClientToDelete}
+          onDelete={beginDelete}
+          onReconcile={handleReconcile}
         />
 
         <div className="mt-4 flex items-center justify-between text-xs text-zinc-500">
@@ -256,8 +333,21 @@ export default function ClientesPage() {
         onClose={() => setProvisioningResult(null)}
       />
 
+      <Modal open={!!reconcileClient} title="Revisar vínculo con Tranett" onClose={() => setReconcileClient(null)}>
+        {reconcileBusy && <p className="text-sm text-zinc-400">Consultando Tranett…</p>}
+        {reconcileError && <p role="alert" className="mb-4 text-sm text-red-300">{reconcileError}</p>}
+        {reconcileCandidate && <div className="space-y-4 text-sm text-zinc-300"><p>El vínculo anterior ya no existe. Se encontró un tenant con el mismo CUIT y subdominio:</p><div className="rounded-xl border border-white/10 p-4"><p><strong>Nombre:</strong> {reconcileCandidate.name}</p><p><strong>Subdominio:</strong> {reconcileCandidate.slug}</p><p><strong>CUIT:</strong> {reconcileCandidate.cuit}</p><p className="break-all text-xs text-zinc-500">ID nuevo: {reconcileCandidate.id}</p></div><p>¿Querés vincularlo con {reconcileClient?.name}?</p><div className="flex gap-2"><button type="button" disabled={reconcileBusy} className="rounded-xl bg-cyan-400 px-4 py-2 font-semibold text-black disabled:opacity-50" onClick={confirmReconcile}>Confirmar vínculo</button><button type="button" className="rounded-xl border border-white/10 px-4 py-2" onClick={() => setReconcileClient(null)}>Cancelar</button></div></div>}
+      </Modal>
+      <Modal open={!!clientToDelete && clientToDelete.product === "Tranett"} title={deletePhase === "preview" ? "¿Estás seguro que querés eliminar el tenant con esos datos?" : "Recordá hacer un backup de los datos"} onClose={() => { if (!deleteBusy) setClientToDelete(null); }}>
+        {deleteBusy && <p className="mb-3 text-sm text-zinc-400">Procesando…</p>}
+        {deleteError && <p role="alert" className="mb-3 text-sm text-red-300">{deleteError}</p>}
+        {deletePhase === "preview" && deletePreview && <div className="space-y-4 text-sm text-zinc-300"><p>Se eliminarán los registros y archivos de <strong>{deletePreview.tenant.name}</strong> ({deletePreview.tenant.slug}).</p><ul className="space-y-1 rounded-xl border border-white/10 p-4">{Object.entries(deletePreview.tables).map(([table, count]) => <li key={table}>{table}: {count}</li>)}<li>Archivos: {deletePreview.files}</li></ul><div className="flex gap-2"><button type="button" disabled={deleteBusy} className="rounded-xl bg-red-400 px-4 py-2 font-semibold text-black disabled:opacity-50" onClick={() => setDeletePhase("backup")}>Sí, continuar</button><button type="button" className="rounded-xl border border-white/10 px-4 py-2" onClick={() => setClientToDelete(null)}>Cancelar</button></div></div>}
+        {deletePhase === "preview" && deleteError && clientToDelete && <div className="flex flex-wrap gap-4"><button type="button" className="text-sm text-cyan-300 underline" onClick={() => { const client = clientToDelete; setClientToDelete(null); void handleReconcile(client); }}>Revisar vínculo con Tranett</button><button type="button" disabled={deleteBusy} className="text-sm text-zinc-300 underline" onClick={unlinkMissingTenant}>Eliminar solo del panel</button></div>}
+        {deletePhase === "backup" && deleteError && clientToDelete && <button type="button" disabled={deleteBusy} className="mb-3 text-sm text-cyan-300 underline" onClick={() => { if (clientToDelete) void beginDelete(clientToDelete); }}>Volver a revisar los datos</button>}
+        {deletePhase === "backup" && deletePreview && <div className="space-y-4 text-sm text-zinc-300"><p>El respaldo ZIP incluye los datos de la base y los archivos del tenant. Detené la actividad del tenant mientras realizás el respaldo y la eliminación. Los cambios posteriores invalidan esta revisión.</p><button type="button" disabled={deleteBusy} className="rounded-xl border border-cyan-400/30 px-4 py-2 text-cyan-300 disabled:opacity-50" onClick={downloadTenantBackup}>{backupDownloaded ? "Descargar backup otra vez" : "Descargar backup"}</button><div className="flex flex-wrap gap-2"><button type="button" disabled={deleteBusy} className="rounded-xl bg-red-400 px-4 py-2 font-semibold text-black disabled:opacity-50" onClick={confirmTenantDelete}>Eliminar definitivamente</button><button type="button" disabled={deleteBusy} className="rounded-xl border border-white/10 px-4 py-2" onClick={() => setClientToDelete(null)}>Cancelar</button></div></div>}
+      </Modal>
       <ConfirmDialog
-        open={!!clientToDelete}
+        open={!!clientToDelete && clientToDelete.product !== "Tranett"}
         title={t("eliminarCliente")}
         description={deleteError || t("eliminarClienteDesc", { name: clientToDelete?.name ?? "" })}
         confirmLabel={t("eliminarCliente")}

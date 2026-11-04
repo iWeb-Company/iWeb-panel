@@ -1,0 +1,4 @@
+services:
+  control-panel:
+    environment:
+      IWEB_TENANT_MAINTENANCE_KEY: ${IWEB_TENANT_MAINTENANCE_KEY:-}

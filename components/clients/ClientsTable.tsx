@@ -9,11 +9,13 @@ export function ClientsTable({
   onEdit,
   onDelete,
   onShowProvisioning,
+  onReconcile,
 }: {
   clients: Client[];
   onEdit: (client: Client) => void;
   onDelete: (client: Client) => void;
   onShowProvisioning?: (client: Client) => void;
+  onReconcile?: (client: Client) => void;
 }) {
   const { t, language } = useLanguage();
   
@@ -94,6 +96,7 @@ export function ClientsTable({
 
                   <td className="px-5 py-5">
                     <div className="flex justify-end gap-2">
+                      {client.product === "Tranett" && onReconcile && <IconActionButton label="Revisar vínculo con Tranett" onClick={() => onReconcile(client)} icon={<span aria-hidden="true">↻</span>} />}
                       <IconActionButton
                         label={t("editarCliente")}
                         onClick={() => onEdit(client)}
