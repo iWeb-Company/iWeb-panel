@@ -75,9 +75,8 @@ export async function POST(req: NextRequest) {
 
       let provisioningData: any = null;
       let loginUrl = `https://${normalizedSlug}.tranett.com/login`;
-      let generatedPass = adminPassword || `Tn.${Math.random().toString(36).substring(2, 8)}!2026`;
 
-      // If product is Tranett, provision against FastAPI backend (2-step flow for maximum server compatibility)
+      // Tranett provisions the tenant and its initial administrator together.
       if (product === "Tranett") {
         const backendForm = new FormData();
         backendForm.append("name", name);
@@ -86,6 +85,9 @@ export async function POST(req: NextRequest) {
         const effectiveEmail = email || adminUsername || `admin@${normalizedSlug}.com`;
         backendForm.append("email", effectiveEmail);
         backendForm.append("status", status === "Activo" ? "true" : "false");
+        backendForm.append("slug", normalizedSlug);
+        backendForm.append("admin_username", adminUsername || effectiveEmail);
+        if (adminPassword) backendForm.append("admin_password", adminPassword);
 
         const logoXl = formData.get("logo_xl");
         const logoS = formData.get("logo_s");
@@ -110,8 +112,7 @@ export async function POST(req: NextRequest) {
           backendForm.append("logo_s", new Blob([validPngBytes], { type: "image/png" }), "logo_s.png");
         }
 
-        // Step 1: Create SaaS Tenant and allocate folders/DB entry
-        const backendRes = await fetch(`${TRAVELNETT_API_BASE}/iweb-clients/create_iweb_client`, {
+        const backendRes = await fetch(`${TRAVELNETT_API_BASE.replace(/\/$/, "")}/iweb-clients/provision`, {
           method: "POST",
           body: backendForm,
         });
@@ -129,62 +130,24 @@ export async function POST(req: NextRequest) {
               errorMsg = typeof parsed.error === "string" ? parsed.error : JSON.stringify(parsed.error);
             }
           } catch {}
-          console.error("Tranett create_iweb_client failed:", errorMsg);
+          console.error("Tranett provisioning failed:", backendRes.status);
           return NextResponse.json(
             { error: `Error al aprovisionar tenant en Tranett: ${errorMsg}` },
             { status: backendRes.status || 500 }
           );
         }
 
-        const clientData = await backendRes.json();
-        const tenantId = clientData.id;
-        const tenantSlug = clientData.slug || normalizedSlug;
-        loginUrl = `https://${tenantSlug}.tranett.com/login`;
-
-        // Step 2: Create initial Admin user in users table
-        let adminUserId = `USR-${Date.now()}`;
+        let result: ProvisioningResult;
         try {
-          const userRes = await fetch(`${TRAVELNETT_API_BASE}/auth/create-user/${tenantId}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              user: {
-                name: name,
-                last_name: "Admin",
-                username: adminUsername,
-                password: generatedPass,
-                active: 1,
-                rol: "admin",
-              },
-            }),
-          });
-
-          if (userRes.ok) {
-            const userJson = await userRes.json();
-            if (userJson.id) adminUserId = userJson.id;
-          } else {
-            console.warn("Could not create initial user:", await userRes.text());
-          }
-        } catch (uErr) {
-          console.warn("User create error:", uErr);
+          result = await backendRes.json();
+        } catch {
+          return NextResponse.json({ error: "Tranett respondió sin confirmar el aprovisionamiento. Verificá si el tenant fue creado antes de reintentar." }, { status: 502 });
         }
-
-        provisioningData = {
-          client: clientData,
-          admin_user: {
-            id: adminUserId,
-            username: adminUsername,
-            name: name,
-            last_name: "Admin",
-            initial_password: generatedPass,
-          },
-          login_url: loginUrl,
-          status: {
-            database: "OK",
-            storage: "OK",
-            subdomain: "OK",
-          },
-        };
+        if (!result?.client?.id || !result.client.slug || !result.admin_user?.id || !result.admin_user.username || !result.admin_user.initial_password || !result.login_url || !result.status) {
+          return NextResponse.json({ error: "Tranett no confirmó el tenant y su administrador. Verificá el alta antes de reintentar." }, { status: 502 });
+        }
+        provisioningData = result;
+        loginUrl = result.login_url;
       }
 
       const clientId = provisioningData?.client?.id || `CL-${Date.now()}`;
@@ -205,12 +168,13 @@ export async function POST(req: NextRequest) {
         cuit,
         email,
         login_url: loginUrl,
-        admin_username: adminUsername,
+        admin_username: provisioningData.admin_user.username,
         logo_xl: logoXlUrl || undefined,
         logo_s: logoSUrl || undefined,
       };
 
-      await run(
+      try {
+        await run(
         `INSERT INTO clients (
           id, name, responsible, monthly, product, status,
           slug, folder_id, cuit, email, login_url, admin_username, logo_xl, logo_s
@@ -231,26 +195,27 @@ export async function POST(req: NextRequest) {
           newClient.logo_xl ?? null,
           newClient.logo_s ?? null,
         ]
-      );
+        );
+      } catch {
+        return NextResponse.json({ error: `El tenant ${clientId} se creó en Tranett, pero no pudo guardarse en el panel. No repitas el alta sin reconciliarlo.` }, { status: 500 });
+      }
 
-      const provisionResult: ProvisioningResult = provisioningData || {
-        client: newClient,
-        admin_user: {
-          id: `USR-${Date.now()}`,
-          username: adminUsername,
-          name: name,
-          last_name: "Admin",
-          initial_password: generatedPass,
-        },
-        login_url: loginUrl,
-        status: {
-          database: "OK",
-          storage: "OK",
-          subdomain: "OK",
-        },
-      };
-
-      return NextResponse.json({ success: true, client: newClient, provisioning: provisionResult });
+      // Confirm the credentials against the same endpoint used by the Tranett login screen.
+      try {
+        const verifyRes = await fetch(`${TRAVELNETT_API_BASE.replace(/\/$/, "")}/auth/login-system`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug: finalSlug, username: provisioningData.admin_user.username, password: provisioningData.admin_user.initial_password }),
+          cache: "no-store",
+        });
+        const verified = verifyRes.ok ? await verifyRes.json() : null;
+        if (!verifyRes.ok || !verified?.access_token || verified?.iweb_client?.id !== clientId) {
+          return NextResponse.json({ error: `El tenant ${clientId} fue creado y guardado, pero Tranett no confirmó las credenciales. No repitas el alta; revisá el administrador del tenant.` }, { status: 502 });
+        }
+      } catch {
+        return NextResponse.json({ error: `El tenant ${clientId} fue creado y guardado, pero no se pudo verificar el acceso. No repitas el alta; comprobá el administrador del tenant.` }, { status: 502 });
+      }
+      return NextResponse.json({ success: true, client: newClient, provisioning: provisioningData });
     }
 
     // 2. Standard JSON body payload
