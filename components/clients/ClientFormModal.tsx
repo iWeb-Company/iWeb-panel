@@ -125,7 +125,7 @@ export function ClientFormModal({
         const effectiveEmail = product === "Foonett" ? email : (email || adminUsername || `admin@${slug || name.toLowerCase().replace(/\s+/g, "_")}.com`);
         formData.append("email", effectiveEmail);
         formData.append("admin_username", adminUsername || effectiveEmail);
-        formData.append("admin_password", adminPassword || `Tn.${Math.random().toString(36).substring(2, 8)}!2026`);
+        if (adminPassword) formData.append("admin_password", adminPassword);
 
         if (logoXlFile) formData.append("logo_xl", logoXlFile);
         if (logoSFile) formData.append("logo_s", logoSFile);
